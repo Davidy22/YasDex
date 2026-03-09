@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Details - YasDex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="container mx-auto px-4 py-8">
+        <div v-if="loading" class="text-center py-12">
+            <div class="spinner mx-auto"></div>
+            <p class="mt-4 text-gray-600">Loading Pokémon data...</p>
+        </div>
+
+        <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <p><strong>Error:</strong> {{ error }}</p>
+            <button @click="goBack" class="mt-2 text-red-700 underline">Return to Search</button>
+        </div>
+
+        <div v-else-if="pokemon">
+            <!-- Navigation -->
+            <div class="mb-4 flex justify-between items-center">
+                <button @click="goBack" class="flex items-center text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Search
+                </button>
+                <div class="flex space-x-2">
+                    <button @click="loadPrevious" :disabled="!previousPokemon" 
+                            class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300">
+                        <i class="fas fa-chevron-left mr-1"></i> Previous
+                    </button>
+                    <button @click="loadNext" :disabled="!nextPokemon"
+                            class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300">
+                        Next <i class="fas fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Top banner -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6 text-white" :style="headerGradient">
+                    <div class="flex items-center">
+                        <div class="relative">
+                            <img :src="currentSprite" :alt="pokemon.name" class="w-32 h-32 bg-white rounded-full p-2">
+                            <button @click="toggleShiny" class="absolute bottom-0 right-0 bg-yellow-400 rounded-full p-2 text-black hover:bg-yellow-300">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </div>
+
+                        <div class="ml-6 flex-1">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h1 class="text-4xl font-bold capitalize">{{ formatName(pokemon.name) }}</h1>
+                                    <p class="text-xl opacity-90">{{ currentGenus }}</p>
+                                    <p class="text-sm opacity-75">#{{ String(pokemon.dex).padStart(4, '0') }}</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <span v-for="type in pokemon.types" :key="type" 
+                                          :class="'px-3 py-1 rounded-full text-sm font-semibold text-white ' + getTypeColor(type)">
+                                        {{ formatName(type) }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <p class="text-sm opacity-75">Height</p>
+                                    <p class="font-semibold">{{ (pokemon.ht / 10).toFixed(1) }} m</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm opacity-75">Weight</p>
+                                    <p class="font-semibold">{{ (pokemon.wt / 10).toFixed(1) }} kg</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px overflow-x-auto">
+                        <button v-for="tab in tabs" :key="tab.id"
+                                @click="currentTab = tab.id"
+                                :class="[
+                                    'px-6 py-3 text-sm font-medium whitespace-nowrap',
+                                    currentTab === tab.id 
+                                        ? 'border-b-2 border-red-500 text-red-600' 
+                                        : 'text-gray-500 hover:text-gray-700'
+                                ]">
+                            <i :class="tab.icon + ' mr-2'"></i>
+                            {{ tab.name }}
+                        </button>
+                    </nav>
+                </div>
+
+                <div class="p-6 tab-content">
+                    <!-- About -->
+                    <div v-if="currentTab === 'about'">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4">Pokédex Entry</h3>
+                                <div class="bg-gray-50 p-4 rounded-lg mb-4 relative">
+                                    <div class="flex justify-between items-center">
+                                        <button @click="prevFlavor" :disabled="currentFlavorIndex === 0"
+                                                class="text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50">
+                                            <i class="fas fa-chevron-left mr-1"></i> Previous
+                                        </button>
+
+                                        <div class="relative" v-click-outside="() => flavorDropdownOpen = false">
+                                            <button ref="flavorButton" @click="toggleFlavorDropdown" 
+                                                    class="text-sm bg-white px-3 py-1 rounded-full shadow-sm hover:shadow-md flex items-center space-x-1">
+                                                <span class="font-medium">{{ formatVersionName(currentFlavorVersion) }}</span>
+                                                <i class="fas fa-chevron-down text-xs ml-1"></i>
+                                            </button>
+
+                                            <div v-if="flavorDropdownOpen" ref="flavorDropdown"
+                                                 class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-xl py-2 z-50 min-w-[150px] max-h-64 overflow-y-auto">
+                                                <div v-for="version in uniqueFlavorVersions" :key="version"
+                                                     @click="jumpToFlavor(version)"
+                                                     class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                                                     :class="{ 'bg-red-50 text-red-600 font-medium': version === currentFlavorVersion }">
+                                                    {{ formatVersionName(version) }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button @click="nextFlavor" :disabled="currentFlavorIndex === pokemon.flavor.length - 1"
+                                                class="text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50">
+                                            Next <i class="fas fa-chevron-right ml-1"></i>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-700 italic mb-3">{{ currentFlavorText }}</p>
+
+                                    <div class="text-center mt-2">
+                                        <span class="text-xs text-gray-400">
+                                            Entry {{ currentFlavorIndex + 1 }} of {{ pokemon.flavor.length }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <h4 class="font-medium text-gray-700 mt-4">Abilities</h4>
+                                <div class="space-y-3 mt-2">
+                                    <div v-for="ability in pokemon.abils" :key="ability.n" 
+                                         class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="flex items-center">
+                                            <span class="font-medium capitalize">{{ formatName(ability.n) }}</span>
+                                            <span v-if="ability.h" class="text-xs bg-gray-200 px-2 py-1 rounded-full ml-2">Hidden</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-1">{{ ability.effect || 'No description available.' }}</p>
+                                    </div>
+                                </div>
+
+                                <div v-if="pokemon.names && Object.keys(pokemon.names).length > 0" class="mt-4">
+                                    <h4 class="font-medium text-gray-700 mb-2">Names in other languages</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span v-for="(name, lang) in pokemon.names" :key="lang"
+                                              class="px-2 py-1 bg-gray-100 rounded text-xs">
+                                            <span class="font-medium">{{ lang }}:</span> {{ name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4">Base Stats</h3>
+                                <div class="space-y-3">
+                                    <div v-for="stat in statBars" :key="stat.name">
+                                        <div class="flex items-center">
+                                            <span class="w-20 text-sm text-gray-600">{{ stat.name }}</span>
+                                            <span class="w-10 text-sm font-medium">{{ stat.value }}</span>
+                                            <div class="flex-1 ml-2">
+                                                <div class="bg-gray-200 rounded-full h-3">
+                                                    <div class="h-3 rounded-full transition-all duration-300" 
+                                                         :class="getStatBarColor(stat.value)"
+                                                         :style="{ width: (stat.value / 255 * 100) + '%' }"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pt-2 border-t">
+                                        <div class="flex items-center">
+                                            <span class="w-20 text-sm font-medium text-gray-600">Total</span>
+                                            <span class="w-10 text-sm font-bold">{{ totalStats }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-lg font-semibold mt-6 mb-4">Training</h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-sm text-gray-500">Base Experience</span>
+                                        <p class="font-medium">{{ pokemon.exp }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm text-gray-500">Growth Rate</span>
+                                        <p class="font-medium capitalize">{{ formatName(pokemon.growth || '') }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm text-gray-500">Base Happiness</span>
+                                        <p class="font-medium">{{ pokemon.happiness }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm text-gray-500">Catch Rate</span>
+                                        <p class="font-medium">{{ pokemon.capture }}</p>
+                                    </div>
+                                    <div v-if="evYield.length > 0">
+                                        <span class="text-sm text-gray-500">EV Yield</span>
+                                        <p v-for="ev in evYield" :key="ev.stat" class="font-medium">{{ formatStatName(ev.stat) }} +{{ ev.value }}</p>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-lg font-semibold mt-6 mb-4">Breeding</h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-sm text-gray-500">Gender Ratio</span>
+                                        <p class="font-medium">
+                                            <span v-if="pokemon.gender === -1">Genderless</span>
+                                            <span v-else>
+                                                {{ (100 - (pokemon.gender / 8 * 100)).toFixed(1) }}% ♂ / 
+                                                {{ (pokemon.gender / 8 * 100).toFixed(1) }}% ♀
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm text-gray-500">Egg Groups</span>
+                                        <p class="font-medium capitalize">{{ pokemon.eggs?.map(e => formatName(e)).join(', ') }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm text-gray-500">Egg Cycles</span>
+                                        <p class="font-medium">{{ pokemon.hatch }} cycles</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm text-gray-500">Baby Pokémon</span>
+                                        <p class="font-medium">{{ pokemon.baby ? 'Yes' : 'No' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="evolutionDisplay" class="mt-8">
+                            <h3 class="text-lg font-semibold mb-4">Evolution Chain</h3>
+                            <div class="evolution-wrapper bg-gray-50 p-6 rounded-lg">
+                                <evolution-chain 
+                                    :chain="evolutionDisplay" 
+                                    @view-pokemon="viewPokemon">
+                                </evolution-chain>
+                            </div>
+                        </div>
+
+                        <div v-if="forms.length > 0" class="mt-8">
+                            <h3 class="text-lg font-semibold mb-4">Alternate Forms</h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 justify-items-center">
+                                <div v-for="form in forms" :key="form.id" 
+                                     @click="viewForm(form.id)"
+                                     class="bg-gray-50 rounded-lg p-3 cursor-pointer hover:shadow-lg transition-shadow text-center w-full">
+                                    <img :src="form.sprite" :alt="form.name" class="w-16 h-16 mx-auto">
+                                    <p class="text-sm font-medium capitalize mt-1">{{ formatName(form.name) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Moves -->
+                    <div v-if="currentTab === 'moves'">
+                        <div v-if="availableVersions.length > 0" class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Game Version:</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button v-for="version in availableVersions" :key="version"
+                                        @click="setVersion(version)"
+                                        :class="[
+                                            'px-3 py-1 rounded-full text-xs font-medium transition-colors',
+                                            selectedVersion === version
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                        ]">
+                                    {{ formatVersionName(version) }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <button v-for="method in moveMethods" :key="method.id"
+                                    @click="currentMoveMethod = method.id"
+                                    :class="[
+                                        'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                                        currentMoveMethod === method.id 
+                                            ? 'bg-red-600 text-white' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    ]">
+                                <i :class="method.icon + ' mr-2'"></i>
+                                {{ method.name }}
+                            </button>
+                        </div>
+
+                        <div v-if="currentMoveMethod === 'level-up'" class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Move</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Power</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accuracy</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PP</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effect</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="move in sortedLevelMoves" :key="move.id" class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ move.level }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">{{ formatName(move.name) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span :class="'px-2 py-1 rounded-full text-xs text-white ' + getTypeColor(move.type)">
+                                                {{ move.type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <i :class="getDamageClassIcon(move.damage_class) + ' mr-1'"></i>
+                                            {{ move.damage_class }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.power || '—' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.accuracy || '—' }}%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.pp || '—' }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs">{{ formatMoveEffect(move) }}</td>
+                                    </tr>
+                                    <tr v-if="sortedLevelMoves.length === 0">
+                                        <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            No level-up moves found for {{ formatVersionName(selectedVersion) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div v-if="currentMoveMethod === 'machine'" class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Move</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Power</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accuracy</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PP</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effect</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="move in currentMoves" :key="move.id" class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">{{ formatName(move.name) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span :class="'px-2 py-1 rounded-full text-xs text-white ' + getTypeColor(move.type)">
+                                                {{ move.type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <i :class="getDamageClassIcon(move.damage_class) + ' mr-1'"></i>
+                                            {{ move.damage_class }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.power || '—' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.accuracy || '—' }}%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.pp || '—' }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs">{{ formatMoveEffect(move) }}</td>
+                                    </tr>
+                                    <tr v-if="currentMoves.length === 0">
+                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            No TM/HM moves found for {{ formatVersionName(selectedVersion) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div v-if="currentMoveMethod === 'egg'" class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Move</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Power</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accuracy</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PP</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effect</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="move in currentMoves" :key="move.id" class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">{{ formatName(move.name) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span :class="'px-2 py-1 rounded-full text-xs text-white ' + getTypeColor(move.type)">
+                                                {{ move.type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <i :class="getDamageClassIcon(move.damage_class) + ' mr-1'"></i>
+                                            {{ move.damage_class }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.power || '—' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.accuracy || '—' }}%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.pp || '—' }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs">{{ formatMoveEffect(move) }}</td>
+                                    </tr>
+                                    <tr v-if="currentMoves.length === 0">
+                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            No egg moves found for {{ formatVersionName(selectedVersion) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div v-if="currentMoveMethod === 'tutor'" class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Move</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Power</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accuracy</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PP</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effect</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="move in currentMoves" :key="move.id" class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">{{ formatName(move.name) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span :class="'px-2 py-1 rounded-full text-xs text-white ' + getTypeColor(move.type)">
+                                                {{ move.type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <i :class="getDamageClassIcon(move.damage_class) + ' mr-1'"></i>
+                                            {{ move.damage_class }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.power || '—' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.accuracy || '—' }}%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ move.pp || '—' }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs">{{ formatMoveEffect(move) }}</td>
+                                    </tr>
+                                    <tr v-if="currentMoves.length === 0">
+                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            No tutor moves found for {{ formatVersionName(selectedVersion) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data-loader.js"></script>
+    <script src="js/pokemon-detail.js"></script>
+</body>
+
+<footer class="mt-12 bg-white rounded-lg shadow-lg p-4">
+    <div class="container mx-auto text-center text-sm text-gray-600">
+        <p class="mb-2">
+            YasDex • <a href="https://pokeapi.co" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 transition-colors">Data from PokéAPI</a>
+        </p>
+        <p class="text-xs text-gray-400">
+            2026 • Not affiliated with Nintendo, Game Freak, or The Pokémon Company
+        </p>
+        <div class="flex justify-center space-x-4 mt-2">
+            <a href="https://github.com/Davidy22/YasDex" class="text-gray-400 hover:text-red-500 transition-colors">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="mailto:davidyang6us@gmail.com" class="text-gray-400 hover:text-red-500 transition-colors">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+</html>

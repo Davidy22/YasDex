@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YasDex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .loading-progress-bar {
+            transition: width 0.3s ease;
+        }
+        .loading-step {
+            transition: all 0.3s ease;
+        }
+        .loading-step.completed {
+            color: #10b981;
+        }
+        .loading-step.active {
+            color: #ef4444;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-red-600 mb-2">YasDex</h1>
+            <p class="text-gray-600">Yet another searchable Pokédex</p>
+        </header>
+
+        <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p><strong>Error:</strong> {{ error }}</p>
+            <p class="text-sm mt-1">Missing data.</p>
+        </div>
+
+        <div v-if="loading" class="bg-white rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
+            <div class="text-center mb-6">
+                <div class="spinner mx-auto mb-4"></div>
+                <h2 class="text-xl font-semibold text-gray-800">Loading Pokédex Data</h2>
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                <div class="bg-red-600 h-2.5 rounded-full loading-progress-bar" 
+                     :style="{ width: loadingProgress + '%' }"></div>
+            </div>
+
+            <div class="space-y-3">
+                <div v-for="step in loadingSteps" :key="step.name" 
+                     class="flex items-center justify-between loading-step"
+                     :class="{ 'completed': step.completed, 'active': step.active }">
+                    <div class="flex items-center">
+                        <i :class="[
+                            'mr-3 text-lg',
+                            step.completed ? 'fas fa-check-circle text-green-500' : 
+                            step.active ? 'fas fa-spinner fa-spin text-red-500' : 
+                            'far fa-circle text-gray-400'
+                        ]"></i>
+                        <span :class="step.active ? 'font-semibold' : ''">{{ step.label }}</span>
+                    </div>
+                    <span class="text-sm" v-if="step.count !== undefined">
+                        {{ step.count }} loaded
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div v-else>
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <!-- Name -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Name contains</label>
+                    <input type="text" v-model="filters.name" 
+                           class="w-full md:w-96 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                           placeholder="Enter name...">
+                </div>
+
+                <!-- Types -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-medium text-gray-700">Types</label>
+                        <select v-model="filters.typeMatchMode" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
+                            <option v-for="mode in typeMatchModes" :key="mode.value" :value="mode.value">
+                                {{ mode.label }}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-9 gap-2 p-3 bg-gray-100 rounded-lg">
+                        <div v-for="type in types" :key="type.id"
+                             @click="toggleType(type.name)"
+                             class="relative cursor-pointer transition-all duration-150 transform hover:scale-105"
+                             :class="[
+                                 getTypeStyle(type.name).bg,
+                                 isTypeSelected(type.name) 
+                                     ? 'shadow-inner translate-y-0.5 brightness-90 ring-2 ring-gray-500 ring-offset-2' 
+                                     : 'shadow-md hover:shadow-lg'
+                             ]"
+                             :style="isTypeSelected(type.name) ? 'filter: brightness(0.95);' : ''">
+                            
+                            <!-- Button face -->
+                            <div class="px-3 py-2 text-center font-medium text-sm rounded-lg select-none"
+                                 :class="[
+                                     getTypeStyle(type.name).text,
+                                     isTypeSelected(type.name) ? '' : 'border-b-2 border-black border-opacity-20 rounded-lg'
+                                 ]">
+                                {{ type.name.charAt(0).toUpperCase() + type.name.slice(1) }}
+                            </div>
+                            
+                            <!-- Pressed effect overlay -->
+                            <div v-if="isTypeSelected(type.name)" 
+                                 class="absolute inset-0 bg-black bg-opacity-10 rounded-lg pointer-events-none"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Abilities -->
+                <div class="mb-6 w-full">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ability</label>
+                    <select v-model="filters.ability" class="w-full md:w-96 px-3 py-2 border border-gray-300 rounded-md">
+                        <option :value="null">Any</option>
+                        <option v-for="ability in abilities" :key="ability.id" :value="ability.name">
+                            {{ formatAbilityName(ability.name) }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="mb-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isLegendary" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Legendary</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isMythical" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Mythical</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isBaby" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Baby</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isBasic" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Basic</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isStage1" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Stage 1</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isStage2" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Stage 2</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isFirstEvolution" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">First Evolution</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isMiddleEvolution" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Middle Evolution</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isFinalEvolution" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Final Evolution</span>
+                    </label>
+                    <!-- TODO: Fix edge cases
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.isOnlyEvolution" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">No Evolution Line</span>
+                    </label>
+                    -->
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.hasMultipleBranching" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Has Branching Evolutions</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="filters.evolvedFromBranching" class="rounded text-red-600">
+                        <span class="text-sm text-gray-700">Evolved from Branching</span>
+                    </label>
+                </div>
+
+                <!-- Stats -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Stat Filters</h3>
+                    <div class="grid grid-cols-2 gap-2 max-w-xs">
+                        <!-- HP -->
+                        <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
+                            <div class="text-sm font-medium text-gray-600">HP</div>
+                            <div class="grid grid-cols-[50px_auto] gap-2">
+                                <select v-model="filters.hp.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
+                                        {{ mode.label }}
+                                    </option>
+                                </select>
+                                <input type="number" v-model.number="filters.hp.value" 
+                                       placeholder="Value" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- Attack -->
+                        <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
+                            <div class="text-sm font-medium text-gray-600">Attack</div>
+                            <div class="grid grid-cols-[50px_auto] gap-2">
+                                <select v-model="filters.attack.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
+                                        {{ mode.label }}
+                                    </option>
+                                </select>
+                                <input type="number" v-model.number="filters.attack.value" 
+                                       placeholder="Value" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- Defense -->
+                        <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
+                            <div class="text-sm font-medium text-gray-600">Defense</div>
+                            <div class="grid grid-cols-[50px_auto] gap-2">
+                                <select v-model="filters.defense.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
+                                        {{ mode.label }}
+                                    </option>
+                                </select>
+                                <input type="number" v-model.number="filters.defense.value" 
+                                       placeholder="Value" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- Special Attack -->
+                        <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
+                            <div class="text-sm font-medium text-gray-600">Sp. Atk</div>
+                            <div class="grid grid-cols-[50px_auto] gap-2">
+                                <select v-model="filters.specialAttack.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
+                                        {{ mode.label }}
+                                    </option>
+                                </select>
+                                <input type="number" v-model.number="filters.specialAttack.value" 
+                                       placeholder="Value" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- Special Defense -->
+                        <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
+                            <div class="text-sm font-medium text-gray-600">Sp. Def</div>
+                            <div class="grid grid-cols-[50px_auto] gap-2">
+                                <select v-model="filters.specialDefense.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
+                                        {{ mode.label }}
+                                    </option>
+                                </select>
+                                <input type="number" v-model.number="filters.specialDefense.value" 
+                                       placeholder="Value" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- Speed -->
+                        <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
+                            <div class="text-sm font-medium text-gray-600">Speed</div>
+                            <div class="grid grid-cols-[50px_auto] gap-2">
+                                <select v-model="filters.speed.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
+                                        {{ mode.label }}
+                                    </option>
+                                </select>
+                                <input type="number" v-model.number="filters.speed.value" 
+                                       placeholder="Value" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- BST -->
+                        <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
+                            <div class="text-sm font-medium text-gray-600">BST</div>
+                            <div class="grid grid-cols-[50px_auto] gap-2">
+                                <select v-model="filters.bst.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
+                                        {{ mode.label }}
+                                    </option>
+                                </select>
+                                <input type="number" v-model.number="filters.bst.value" 
+                                       placeholder="Value" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Moves -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Move Filters</h3>
+                    
+                    <div class="space-y-2 max-w-5xl">
+                        <div v-for="(move, index) in filters.moves" :key="index" 
+                             class="grid grid-cols-3 gap-2 items-center">
+                            <select v-model="move.name" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                <option :value="null">Any</option>
+                                <option v-for="m in sortedMoves" :key="m.id" :value="m.name">
+                                    {{ formatMoveName(m.name) }}
+                                </option>
+                            </select>
+
+                            <select v-model="move.method" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                <option v-for="method in moveMethods" :key="method.value" :value="method.value">
+                                    {{ method.label }}
+                                </option>
+                            </select>
+
+                            <select v-model="move.version" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                <option :value="null">Version</option>
+                                <option v-for="version in versionGroups" :key="version.id" :value="version.name">
+                                    {{ formatVersionName(version.name) }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generation -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Generation</label>
+                    <select v-model="filters.generation" class="w-full md:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <option :value="null">Any</option>
+                        <option v-for="gen in generations" :key="gen.value" :value="gen.value">
+                            {{ gen.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Egg Groups -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-medium text-gray-700">Egg Groups</label>
+                        <select v-model="filters.eggGroupMatchMode" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
+                            <option v-for="mode in typeMatchModes" :key="mode.value" :value="mode.value">
+                                {{ mode.label }}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="relative">
+                            <select v-model="filters.eggGroup1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <option :value="null">Any</option>
+                                <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.name"
+                                        :disabled="eggGroup.name === filters.eggGroup2">
+                                    {{ formatEggGroupName(eggGroup.name) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="relative">
+                            <select v-model="filters.eggGroup2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <option :value="null">Any</option>
+                                <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.name"
+                                        :disabled="eggGroup.name === filters.eggGroup1">
+                                    {{ formatEggGroupName(eggGroup.name) }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sort Options -->
+                <div class="mb-6 flex items-center space-x-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sort by</label>
+                        <select v-model="sortBy" class="px-3 py-2 border border-gray-300 rounded-md">
+                            <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+                                {{ option.label }}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                        <select v-model="sortOrder" class="px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search Buttons -->
+                <div class="flex justify-end space-x-2">
+                    <button @click="resetFilters" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 w-1/3">
+                        Reset All Filters
+                    </button>
+                    <button @click="performSearch" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 w-2/3">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div v-show="showResults" class="bg-white rounded-lg shadow-lg p-6 results-box">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold">
+                        Results <span class="text-sm text-gray-500 ml-2">({{ filteredPokemon.length }} Pokémon found)</span>
+                    </h2>
+                </div>
+
+                <div v-if="filteredPokemon.length === 0" class="text-center py-12 text-gray-500">
+                    <i class="fas fa-search text-4xl mb-4"></i>
+                    <p>No Pokémon found matching your criteria.</p>
+                </div>
+
+                <div v-else class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4">
+                    <div v-for="p in filteredPokemon" :key="p.id" 
+                         @click="showDetails(p)"
+                         class="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow border border-gray-200 hover:border-red-300">
+                        <img :src="p.sprite" :alt="p.name" class="w-24 h-24 mx-auto" loading="lazy">
+                        <div class="text-center mt-2">
+                            <span class="text-sm text-gray-500">#{{ formatNumber(p.dex) }}</span>
+                            <h3 class="font-semibold capitalize">{{ formatName(p.name) }}</h3>
+                        </div>
+                        <div class="flex justify-center space-x-1 mt-2">
+                            <span v-for="type in p.types" :key="type" 
+                                  :class="'px-2 py-1 text-xs rounded-full text-white ' + getTypeStyle(type).bg">
+                                {{ type }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data-loader.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+<footer class="mt-12 bg-white rounded-lg shadow-lg p-4">
+    <div class="container mx-auto text-center text-sm text-gray-600">
+        <p class="mb-2">
+            YasDex • <a href="https://pokeapi.co" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 transition-colors">Data from PokéAPI</a>
+        </p>
+        <p class="text-xs text-gray-400">
+            2026 • Not affiliated with Nintendo, Game Freak, or The Pokémon Company
+        </p>
+        <div class="flex justify-center space-x-4 mt-2">
+            <a href="https://github.com/Davidy22/YasDex" class="text-gray-400 hover:text-red-500 transition-colors">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="mailto:davidyang6us@gmail.com" class="text-gray-400 hover:text-red-500 transition-colors">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
+</html>

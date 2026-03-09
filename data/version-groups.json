@@ -1,0 +1,267 @@
+[
+  {
+    "id": 1,
+    "name": "red-blue",
+    "generation": "generation-i",
+    "versions": [
+      "red",
+      "blue"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "yellow",
+    "generation": "generation-i",
+    "versions": [
+      "yellow"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "gold-silver",
+    "generation": "generation-ii",
+    "versions": [
+      "gold",
+      "silver"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "crystal",
+    "generation": "generation-ii",
+    "versions": [
+      "crystal"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "ruby-sapphire",
+    "generation": "generation-iii",
+    "versions": [
+      "ruby",
+      "sapphire"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "emerald",
+    "generation": "generation-iii",
+    "versions": [
+      "emerald"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "firered-leafgreen",
+    "generation": "generation-iii",
+    "versions": [
+      "firered",
+      "leafgreen"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "diamond-pearl",
+    "generation": "generation-iv",
+    "versions": [
+      "diamond",
+      "pearl"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "platinum",
+    "generation": "generation-iv",
+    "versions": [
+      "platinum"
+    ]
+  },
+  {
+    "id": 10,
+    "name": "heartgold-soulsilver",
+    "generation": "generation-iv",
+    "versions": [
+      "heartgold",
+      "soulsilver"
+    ]
+  },
+  {
+    "id": 11,
+    "name": "black-white",
+    "generation": "generation-v",
+    "versions": [
+      "black",
+      "white"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "colosseum",
+    "generation": "generation-iii",
+    "versions": [
+      "colosseum"
+    ]
+  },
+  {
+    "id": 13,
+    "name": "xd",
+    "generation": "generation-iii",
+    "versions": [
+      "xd"
+    ]
+  },
+  {
+    "id": 14,
+    "name": "black-2-white-2",
+    "generation": "generation-v",
+    "versions": [
+      "black-2",
+      "white-2"
+    ]
+  },
+  {
+    "id": 15,
+    "name": "x-y",
+    "generation": "generation-vi",
+    "versions": [
+      "x",
+      "y"
+    ]
+  },
+  {
+    "id": 16,
+    "name": "omega-ruby-alpha-sapphire",
+    "generation": "generation-vi",
+    "versions": [
+      "omega-ruby",
+      "alpha-sapphire"
+    ]
+  },
+  {
+    "id": 17,
+    "name": "sun-moon",
+    "generation": "generation-vii",
+    "versions": [
+      "sun",
+      "moon"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "ultra-sun-ultra-moon",
+    "generation": "generation-vii",
+    "versions": [
+      "ultra-sun",
+      "ultra-moon"
+    ]
+  },
+  {
+    "id": 19,
+    "name": "lets-go-pikachu-lets-go-eevee",
+    "generation": "generation-vii",
+    "versions": [
+      "lets-go-pikachu",
+      "lets-go-eevee"
+    ]
+  },
+  {
+    "id": 20,
+    "name": "sword-shield",
+    "generation": "generation-viii",
+    "versions": [
+      "sword",
+      "shield"
+    ]
+  },
+  {
+    "id": 21,
+    "name": "the-isle-of-armor",
+    "generation": "generation-viii",
+    "versions": [
+      "the-isle-of-armor"
+    ]
+  },
+  {
+    "id": 22,
+    "name": "the-crown-tundra",
+    "generation": "generation-viii",
+    "versions": [
+      "the-crown-tundra"
+    ]
+  },
+  {
+    "id": 23,
+    "name": "brilliant-diamond-shining-pearl",
+    "generation": "generation-viii",
+    "versions": [
+      "brilliant-diamond",
+      "shining-pearl"
+    ]
+  },
+  {
+    "id": 24,
+    "name": "legends-arceus",
+    "generation": "generation-viii",
+    "versions": [
+      "legends-arceus"
+    ]
+  },
+  {
+    "id": 25,
+    "name": "scarlet-violet",
+    "generation": "generation-ix",
+    "versions": [
+      "scarlet",
+      "violet"
+    ]
+  },
+  {
+    "id": 26,
+    "name": "the-teal-mask",
+    "generation": "generation-ix",
+    "versions": [
+      "the-teal-mask"
+    ]
+  },
+  {
+    "id": 27,
+    "name": "the-indigo-disk",
+    "generation": "generation-ix",
+    "versions": [
+      "the-indigo-disk"
+    ]
+  },
+  {
+    "id": 28,
+    "name": "red-green-japan",
+    "generation": "generation-i",
+    "versions": [
+      "red-japan",
+      "green-japan"
+    ]
+  },
+  {
+    "id": 29,
+    "name": "blue-japan",
+    "generation": "generation-i",
+    "versions": [
+      "blue-japan"
+    ]
+  },
+  {
+    "id": 30,
+    "name": "legends-za",
+    "generation": "generation-ix",
+    "versions": [
+      "legends-za"
+    ]
+  },
+  {
+    "id": 31,
+    "name": "mega-dimension",
+    "generation": "generation-ix",
+    "versions": [
+      "mega-dimension"
+    ]
+  }
+]

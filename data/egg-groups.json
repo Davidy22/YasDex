@@ -1,0 +1,242 @@
+[
+  {
+    "id": 3,
+    "name": "bug",
+    "names": {
+      "ja-hrkt": "\u3080\u3057",
+      "ko": "\ubc8c\ub808",
+      "zh-hant": "\u87f2",
+      "fr": "Insecto\u00efde",
+      "de": "K\u00e4fer",
+      "es": "Bicho",
+      "it": "Coleottero",
+      "en": "Bug",
+      "zh-hans": "\u866b"
+    },
+    "pokemon_count": 91
+  },
+  {
+    "id": 13,
+    "name": "ditto",
+    "names": {
+      "ja-hrkt": "\u30e1\u30bf\u30e2\u30f3",
+      "ko": "\uba54\ud0c0\ubabd",
+      "zh-hant": "\u767e\u8b8a\u602a",
+      "fr": "M\u00e9tamorph",
+      "de": "Ditto",
+      "es": "Ditto",
+      "it": "Ditto",
+      "en": "Ditto",
+      "zh-hans": "\u767e\u53d8\u602a"
+    },
+    "pokemon_count": 1
+  },
+  {
+    "id": 14,
+    "name": "dragon",
+    "names": {
+      "ja-hrkt": "\u30c9\u30e9\u30b4\u30f3",
+      "ko": "\ub4dc\ub798\uace4",
+      "zh-hant": "\u9f8d",
+      "fr": "Draconique",
+      "de": "Drache",
+      "es": "Drag\u00f3n",
+      "it": "Drago",
+      "en": "Dragon",
+      "zh-hans": "\u9f99"
+    },
+    "pokemon_count": 72
+  },
+  {
+    "id": 6,
+    "name": "fairy",
+    "names": {
+      "ja-hrkt": "\u3088\u3046\u305b\u3044",
+      "ko": "\uc694\uc815",
+      "zh-hant": "\u5996\u7cbe",
+      "fr": "F\u00e9erique",
+      "de": "Fee",
+      "es": "Hada",
+      "it": "Magico",
+      "en": "Fairy",
+      "zh-hans": "\u5996\u7cbe"
+    },
+    "pokemon_count": 66
+  },
+  {
+    "id": 4,
+    "name": "flying",
+    "names": {
+      "ja-hrkt": "\u3072\u3053\u3046",
+      "ko": "\ube44\ud589",
+      "zh-hant": "\u98db\u884c",
+      "fr": "A\u00e9rien",
+      "de": "Flug",
+      "es": "Volador",
+      "it": "Volante",
+      "en": "Flying",
+      "zh-hans": "\u98de\u884c"
+    },
+    "pokemon_count": 73
+  },
+  {
+    "id": 5,
+    "name": "ground",
+    "names": {
+      "ja-hrkt": "\u308a\u304f\u3058\u3087\u3046",
+      "ko": "\uc721\uc0c1",
+      "zh-hant": "\u9678\u4e0a",
+      "fr": "Terrestre",
+      "de": "Feld",
+      "es": "Campo",
+      "it": "Campo",
+      "en": "Field",
+      "zh-hans": "\u9646\u4e0a"
+    },
+    "pokemon_count": 278
+  },
+  {
+    "id": 8,
+    "name": "humanshape",
+    "names": {
+      "ja-hrkt": "\u3072\u3068\u304c\u305f",
+      "ko": "\uc778\uac04\ud615",
+      "zh-hant": "\u4eba\u578b",
+      "fr": "Humano\u00efde",
+      "de": "Humanotyp",
+      "es": "Humanoide",
+      "it": "Umanoide",
+      "en": "Human-Like",
+      "zh-hans": "\u4eba\u578b"
+    },
+    "pokemon_count": 70
+  },
+  {
+    "id": 11,
+    "name": "indeterminate",
+    "names": {
+      "ja-hrkt": "\u3075\u3066\u3044\u3051\u3044",
+      "ko": "\ubd80\uc815\ud615",
+      "zh-hant": "\u4e0d\u5b9a\u5f62",
+      "fr": "Amorphe",
+      "de": "Amorph",
+      "es": "Amorfo",
+      "it": "Amorfo",
+      "en": "Amorphous",
+      "zh-hans": "\u4e0d\u5b9a\u5f62"
+    },
+    "pokemon_count": 63
+  },
+  {
+    "id": 10,
+    "name": "mineral",
+    "names": {
+      "ja-hrkt": "\u3053\u3046\u3076\u3064",
+      "ko": "\uad11\ubb3c",
+      "zh-hant": "\u7926\u7269",
+      "fr": "Min\u00e9ral",
+      "de": "Mineral",
+      "es": "Mineral",
+      "it": "Minerale",
+      "en": "Mineral",
+      "zh-hans": "\u77ff\u7269"
+    },
+    "pokemon_count": 84
+  },
+  {
+    "id": 1,
+    "name": "monster",
+    "names": {
+      "ja-hrkt": "\u304b\u3044\u3058\u3085\u3046",
+      "ko": "\uad34\uc218",
+      "zh-hant": "\u602a\u7378",
+      "fr": "Monstrueux",
+      "de": "Monster",
+      "es": "Monstruo",
+      "it": "Mostro",
+      "en": "Monster",
+      "zh-hans": "\u602a\u517d"
+    },
+    "pokemon_count": 81
+  },
+  {
+    "id": 15,
+    "name": "no-eggs",
+    "names": {
+      "ja-hrkt": "\u30bf\u30de\u30b4\u307f\u306f\u3063\u3051\u3093",
+      "ko": "\uc54c\ubbf8\ubc1c\uacac",
+      "zh-hant": "\u672a\u767c\u73fe",
+      "fr": "Inconnu",
+      "de": "Unbekannt",
+      "es": "Desconocido",
+      "it": "Non ancora scoperto",
+      "en": "Undiscovered",
+      "zh-hans": "\u672a\u53d1\u73b0"
+    },
+    "pokemon_count": 151
+  },
+  {
+    "id": 7,
+    "name": "plant",
+    "names": {
+      "ja-hrkt": "\u3057\u3087\u304f\u3076\u3064",
+      "ko": "\uc2dd\ubb3c",
+      "zh-hant": "\u690d\u7269",
+      "fr": "V\u00e9g\u00e9tal",
+      "de": "Pflanze",
+      "es": "Planta",
+      "it": "Erba",
+      "en": "Grass",
+      "zh-hans": "\u690d\u7269"
+    },
+    "pokemon_count": 89
+  },
+  {
+    "id": 2,
+    "name": "water1",
+    "names": {
+      "ja-hrkt": "\u3059\u3044\u3061\u3085\u3046\uff11",
+      "ko": "\uc218\uc911 1",
+      "zh-hant": "\u6c34\u4e2d1",
+      "fr": "Aquatique 1",
+      "de": "Wasser 1",
+      "es": "Agua 1",
+      "it": "Acqua 1",
+      "en": "Water 1",
+      "zh-hans": "\u6c34\u4e2d1"
+    },
+    "pokemon_count": 114
+  },
+  {
+    "id": 12,
+    "name": "water2",
+    "names": {
+      "ja-hrkt": "\u3059\u3044\u3061\u3085\u3046\uff12",
+      "ko": "\uc218\uc911 2",
+      "zh-hant": "\u6c34\u4e2d2",
+      "fr": "Aquatique 2",
+      "de": "Wasser 2",
+      "es": "Agua 2",
+      "it": "Acqua 2",
+      "en": "Water 2",
+      "zh-hans": "\u6c34\u4e2d2"
+    },
+    "pokemon_count": 34
+  },
+  {
+    "id": 9,
+    "name": "water3",
+    "names": {
+      "ja-hrkt": "\u3059\u3044\u3061\u3085\u3046\uff13",
+      "ko": "\uc218\uc911 3",
+      "zh-hant": "\u6c34\u4e2d3",
+      "fr": "Aquatique 3",
+      "de": "Wasser 3",
+      "es": "Agua 3",
+      "it": "Acqua 3",
+      "en": "Water 3",
+      "zh-hans": "\u6c34\u4e2d\uff13"
+    },
+    "pokemon_count": 37
+  }
+]
