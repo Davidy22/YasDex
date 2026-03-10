@@ -188,7 +188,7 @@
                         <!-- HP -->
                         <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
                             <div class="text-sm font-medium text-gray-600">HP</div>
-                            <div class="grid grid-cols-[50px_auto] gap-2">
+                            <div class="grid grid-cols-[50px_110px] gap-2">
                                 <select v-model="filters.hp.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
                                     <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
                                         {{ mode.label }}
@@ -202,7 +202,7 @@
                         <!-- Attack -->
                         <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
                             <div class="text-sm font-medium text-gray-600">Attack</div>
-                            <div class="grid grid-cols-[50px_auto] gap-2">
+                            <div class="grid grid-cols-[50px_110px] gap-2">
                                 <select v-model="filters.attack.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
                                     <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
                                         {{ mode.label }}
@@ -216,7 +216,7 @@
                         <!-- Defense -->
                         <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
                             <div class="text-sm font-medium text-gray-600">Defense</div>
-                            <div class="grid grid-cols-[50px_auto] gap-2">
+                            <div class="grid grid-cols-[50px_110px] gap-2">
                                 <select v-model="filters.defense.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
                                     <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
                                         {{ mode.label }}
@@ -230,7 +230,7 @@
                         <!-- Special Attack -->
                         <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
                             <div class="text-sm font-medium text-gray-600">Sp. Atk</div>
-                            <div class="grid grid-cols-[50px_auto] gap-2">
+                            <div class="grid grid-cols-[50px_110px] gap-2">
                                 <select v-model="filters.specialAttack.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
                                     <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
                                         {{ mode.label }}
@@ -244,7 +244,7 @@
                         <!-- Special Defense -->
                         <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
                             <div class="text-sm font-medium text-gray-600">Sp. Def</div>
-                            <div class="grid grid-cols-[50px_auto] gap-2">
+                            <div class="grid grid-cols-[50px_110px] gap-2">
                                 <select v-model="filters.specialDefense.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
                                     <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
                                         {{ mode.label }}
@@ -258,7 +258,7 @@
                         <!-- Speed -->
                         <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
                             <div class="text-sm font-medium text-gray-600">Speed</div>
-                            <div class="grid grid-cols-[50px_auto] gap-2">
+                            <div class="grid grid-cols-[50px_110px] gap-2">
                                 <select v-model="filters.speed.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
                                     <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
                                         {{ mode.label }}
@@ -272,7 +272,7 @@
                         <!-- BST -->
                         <div class="col-span-2 grid grid-cols-[60px_auto] gap-2">
                             <div class="text-sm font-medium text-gray-600">BST</div>
-                            <div class="grid grid-cols-[50px_auto] gap-2">
+                            <div class="grid grid-cols-[50px_110px] gap-2">
                                 <select v-model="filters.bst.mode" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
                                     <option v-for="mode in statModes" :key="mode.value" :value="mode.value">
                                         {{ mode.label }}
