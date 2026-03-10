@@ -64,8 +64,8 @@ const App = {
             ],
             
             typeMatchModes: [
-                { value: 'any', label: 'Has any selected' },
                 { value: 'all', label: 'Has all selected' },
+                { value: 'any', label: 'Has any selected' },
                 { value: 'exact', label: 'Only has selected' }
             ],
 
