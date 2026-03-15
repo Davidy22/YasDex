@@ -212,6 +212,8 @@ def generate_egg_groups():
         detail = fetch_json(egg_info['url'])
         if not detail:
             continue
+        if egg_info['name'] in ['ditto']:
+            continue
 
         names = {}
         for name_entry in detail.get('names', []):

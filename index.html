@@ -344,7 +344,7 @@
                                 <option :value="null">Any</option>
                                 <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.name"
                                         :disabled="eggGroup.name === filters.eggGroup2">
-                                    {{ formatEggGroupName(eggGroup.name) }}
+                                    {{ eggGroup.names.en }}
                                 </option>
                             </select>
                         </div>
@@ -354,7 +354,7 @@
                                 <option :value="null">Any</option>
                                 <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.name"
                                         :disabled="eggGroup.name === filters.eggGroup1">
-                                    {{ formatEggGroupName(eggGroup.name) }}
+                                    {{ eggGroup.names.en }}
                                 </option>
                             </select>
                         </div>
