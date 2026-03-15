@@ -44,7 +44,7 @@
   {
     "id": 107,
     "name": "anticipation",
-    "effect": "When this Pok\u00e9mon enters battle, if one of its opponents has a move that is super effective against it, self destruct, explosion, or a one-hit knockout move, all participating trainers are notified.\n\nThe move itself is not revealed; only that there is such a move.  Moves that inflict typeless damage, such as future sight, and moves of variable type, such as hidden power, count as their listed types.  counter, metal burst, mirror coat, and one-hit KO moves to which this Pok\u00e9mon is immune do not t",
+    "effect": "When this Pok\u00e9mon enters battle, if one of its opponents has a move that is super effective against it, self destruct, explosion, or a one-hit knockout move, all participating trainers are notified.\n\nThe move itself is not revealed; only that there is such a move.  Moves that inflict typeless damage, such as future sight, and moves of variable type, such as hidden power, count as their listed types.  counter, metal burst, mirror coat, and one-hit KO moves to which this Pok\u00e9mon is immune do not trigger this ability.",
     "short_effect": "Notifies all trainers upon entering battle if an opponent has a super-effective move, self destruct, explosion, or a one-hit KO move."
   },
   {
@@ -374,13 +374,13 @@
   {
     "id": 191,
     "name": "delta-stream",
-    "effect": "When this Pok\u00e9mon enters battle or gains this ability, the weather becomes a mysterious air current.  A mysterious air current causes moves to not be super effective against Flying; they do neutral damage instead.  anticipation and stealth rock are not affected.\n\nThe mysterious air current ends when this Pok\u00e9mon leaves battle or loses this ability, or when this ability is nullified.  The weather cannot otherwise be changed except by the effects of desolate land and primordial sea.\n\nair lock and ",
+    "effect": "When this Pok\u00e9mon enters battle or gains this ability, the weather becomes a mysterious air current.  A mysterious air current causes moves to not be super effective against Flying; they do neutral damage instead.  anticipation and stealth rock are not affected.\n\nThe mysterious air current ends when this Pok\u00e9mon leaves battle or loses this ability, or when this ability is nullified.  The weather cannot otherwise be changed except by the effects of desolate land and primordial sea.\n\nair lock and cloud nine will prevent the effect of a mysterious air current, but will not allow the weather to be changed.",
     "short_effect": "Creates a mysterious air current, which cannot be replaced and causes moves to never be super effective against Flying Pok\u00e9mon."
   },
   {
     "id": 190,
     "name": "desolate-land",
-    "effect": "When this Pok\u00e9mon enters battle or gains this ability, the weather becomes extremely harsh sunlight.  Extremely harsh sunlight has all the properties of sunny day and also causes damaging Water moves to fail.\n\nExtremely harsh sunlight ends when this Pok\u00e9mon leaves battle or loses this ability, or when this ability is nullified.  The weather cannot otherwise be changed except by the effects of delta stream and primordial sea.\n\nair lock and cloud nine will prevent the effects of extremely harsh su",
+    "effect": "When this Pok\u00e9mon enters battle or gains this ability, the weather becomes extremely harsh sunlight.  Extremely harsh sunlight has all the properties of sunny day and also causes damaging Water moves to fail.\n\nExtremely harsh sunlight ends when this Pok\u00e9mon leaves battle or loses this ability, or when this ability is nullified.  The weather cannot otherwise be changed except by the effects of delta stream and primordial sea.\n\nair lock and cloud nine will prevent the effects of extremely harsh sunlight, including allowing Water moves to work, but will not allow the weather to be changed.",
     "short_effect": "Creates extremely harsh sunlight, which has all the properties of Sunny Day, cannot be replaced, and causes damaging Water moves to fail."
   },
   {
@@ -536,13 +536,13 @@
   {
     "id": 59,
     "name": "forecast",
-    "effect": "During rain, strong sunlight, or hail, this Pok\u00e9mon's type changes to water, fire, or ice, respectively, and its form changes to match.\n\nThis ability has no effect for any Pok\u00e9mon other than castform.\n\nIf the weather ends or becomes anything that does not trigger this ability, or a Pok\u00e9mon with air lock or cloud nine enters battle, this Pok\u00e9mon's type and form revert to their default.  If this ability is lost or disabled, this Pok\u00e9mon cannot change its current type and form until it regains its ",
+    "effect": "During rain, strong sunlight, or hail, this Pok\u00e9mon's type changes to water, fire, or ice, respectively, and its form changes to match.\n\nThis ability has no effect for any Pok\u00e9mon other than castform.\n\nIf the weather ends or becomes anything that does not trigger this ability, or a Pok\u00e9mon with air lock or cloud nine enters battle, this Pok\u00e9mon's type and form revert to their default.  If this ability is lost or disabled, this Pok\u00e9mon cannot change its current type and form until it regains its ability.",
     "short_effect": "Changes castform's type and form to match the weather."
   },
   {
     "id": 108,
     "name": "forewarn",
-    "effect": "When this Pok\u00e9mon enters battle, it reveals the move with the highest base power known by any opposing Pok\u00e9mon to all participating trainers.\n\nIn the event of a tie, one is chosen at random.\n\nMoves without a listed base power are assigned one as follows:\n\nPower | Moves\n----: | -----\n  160 | One-hit KO moves: fissure, guillotine, horn drill, and sheer cold\n  120 | Counter moves: counter, metal burst, and mirror coat\n   80 | Variable power or set damage: crush grip, dragon rage, electro ball, ende",
+    "effect": "When this Pok\u00e9mon enters battle, it reveals the move with the highest base power known by any opposing Pok\u00e9mon to all participating trainers.\n\nIn the event of a tie, one is chosen at random.\n\nMoves without a listed base power are assigned one as follows:\n\nPower | Moves\n----: | -----\n  160 | One-hit KO moves: fissure, guillotine, horn drill, and sheer cold\n  120 | Counter moves: counter, metal burst, and mirror coat\n   80 | Variable power or set damage: crush grip, dragon rage, electro ball, endeavor, final gambit, flail, frustration, grass knot, gyro ball, heat crash, heavy slam, hidden power, low kick, natural gift, night shade, psywave, return, reversal, seismic toss, sonic boom, trump card, and wring out\n    0 | Any such move not listed\n",
     "short_effect": "Reveals the opponents' strongest move upon entering battle."
   },
   {
@@ -848,7 +848,7 @@
   {
     "id": 22,
     "name": "intimidate",
-    "effect": "When this Pok\u00e9mon enters battle, the opponent's Attack is lowered by one stage.  In a double battle, both opponents are affected.\n\nThis ability also takes effect when acquired during a battle, but will not take effect again if lost and reobtained without leaving battle.\n\nThis ability has no effect on an opponent that has a substitute.\n\nOverworld: If the first Pok\u00e9mon in the party has this ability, any random encounter with a Pok\u00e9mon five or more levels lower than it has a 50% chance of being ski",
+    "effect": "When this Pok\u00e9mon enters battle, the opponent's Attack is lowered by one stage.  In a double battle, both opponents are affected.\n\nThis ability also takes effect when acquired during a battle, but will not take effect again if lost and reobtained without leaving battle.\n\nThis ability has no effect on an opponent that has a substitute.\n\nOverworld: If the first Pok\u00e9mon in the party has this ability, any random encounter with a Pok\u00e9mon five or more levels lower than it has a 50% chance of being skipped.",
     "short_effect": "Lowers opponents' Attack one stage upon entering battle."
   },
   {
@@ -884,13 +884,13 @@
   {
     "id": 51,
     "name": "keen-eye",
-    "effect": "This Pok\u00e9mon cannot have its accuracy lowered.\n\nThis ability does not prevent any accuracy losses other than stat modifiers, such as the accuracy cut from fog; nor does it prevent other Pok\u00e9mon's evasion from making this Pok\u00e9mon's moves less accurate.  This Pok\u00e9mon can still be passed negative accuracy modifiers through heart swap.\n\nOverworld: If the first Pok\u00e9mon in the party has this ability, any random encounter with a Pok\u00e9mon five or more levels lower than it has a 50% chance of being skippe",
+    "effect": "This Pok\u00e9mon cannot have its accuracy lowered.\n\nThis ability does not prevent any accuracy losses other than stat modifiers, such as the accuracy cut from fog; nor does it prevent other Pok\u00e9mon's evasion from making this Pok\u00e9mon's moves less accurate.  This Pok\u00e9mon can still be passed negative accuracy modifiers through heart swap.\n\nOverworld: If the first Pok\u00e9mon in the party has this ability, any random encounter with a Pok\u00e9mon five or more levels lower than it has a 50% chance of being skipped.",
     "short_effect": "Prevents accuracy from being lowered."
   },
   {
     "id": 103,
     "name": "klutz",
-    "effect": "In battle, this Pok\u00e9mon cannot use its held item, nor will the item have any passive effect on the battle, positive or negative.  This Pok\u00e9mon also cannot use fling.\n\nThe Speed cut from the iron ball and the effort items (the macho brace, power weight, power bracer, power belt, power lens, power band, and power anklet) is unaffected.  Items that do not directly affect the battle, such as the exp share, the amulet coin, or the soothe bell, work as usual.  All held items work as usual out of battl",
+    "effect": "In battle, this Pok\u00e9mon cannot use its held item, nor will the item have any passive effect on the battle, positive or negative.  This Pok\u00e9mon also cannot use fling.\n\nThe Speed cut from the iron ball and the effort items (the macho brace, power weight, power bracer, power belt, power lens, power band, and power anklet) is unaffected.  Items that do not directly affect the battle, such as the exp share, the amulet coin, or the soothe bell, work as usual.  All held items work as usual out of battle.\n\nOther moves that use the held item, such as natural gift and switcheroo, work as usual.",
     "short_effect": "Prevents the Pok\u00e9mon from using its held item in battle."
   },
   {
@@ -932,7 +932,7 @@
   {
     "id": 31,
     "name": "lightning-rod",
-    "effect": "All other Pok\u00e9mon's single-target electric-type moves are redirected to this Pok\u00e9mon if it is an eligible target.  Other Pok\u00e9mon's Electric moves raise this Pok\u00e9mon's Special Attack one stage, negating any other effect on it, and cannot miss it.\n\nIf the move's intended target also has this ability, the move is not redirected.  When multiple Pok\u00e9mon with this ability are possible targets for redirection, the move is redirected to the one with the highest Speed stat, or, in the case of a tie, to a",
+    "effect": "All other Pok\u00e9mon's single-target electric-type moves are redirected to this Pok\u00e9mon if it is an eligible target.  Other Pok\u00e9mon's Electric moves raise this Pok\u00e9mon's Special Attack one stage, negating any other effect on it, and cannot miss it.\n\nIf the move's intended target also has this ability, the move is not redirected.  When multiple Pok\u00e9mon with this ability are possible targets for redirection, the move is redirected to the one with the highest Speed stat, or, in the case of a tie, to a random tied Pok\u00e9mon.  follow me takes precedence over this ability.\n\nIf the Pok\u00e9mon is a ground-type and thus immune to Electric moves, its immunity prevents the Special Attack boost.",
     "short_effect": "Redirects single-target electric moves to this Pok\u00e9mon where possible.  Absorbs Electric moves, raising Special Attack one stage."
   },
   {
@@ -986,7 +986,7 @@
   {
     "id": 98,
     "name": "magic-guard",
-    "effect": "This Pok\u00e9mon is immune to damage not directly caused by a move.\n\nFor example, this Pok\u00e9mon takes no damage from from weather, recoil, status ailments, or spikes, but it still suffers from the Attack cut when burned, and a life orb will still power up this Pok\u00e9mon's moves without damaging it.  Anything that directly depends on such damage will also not happen; for example, leech seed will neither hurt this Pok\u00e9mon nor heal the opponent, and Pok\u00e9mon with a jaboca berry or rowap berry will not cons",
+    "effect": "This Pok\u00e9mon is immune to damage not directly caused by a move.\n\nFor example, this Pok\u00e9mon takes no damage from from weather, recoil, status ailments, or spikes, but it still suffers from the Attack cut when burned, and a life orb will still power up this Pok\u00e9mon's moves without damaging it.  Anything that directly depends on such damage will also not happen; for example, leech seed will neither hurt this Pok\u00e9mon nor heal the opponent, and Pok\u00e9mon with a jaboca berry or rowap berry will not consume the berry when hit by this Pok\u00e9mon.\n\nThe following are unaffected: struggle, pain split (whether used by or against this Pok\u00e9mon), belly drum, substitute, curse, moves that knock the user out, and damage from confusion.\n\nThis Pok\u00e9mon will neither lose nor regain HP if it drains HP from a Pok\u00e9mon with liquid ooze.\n\nIf this Pok\u00e9mon is badly poisoned, the poison counter is still increased each turn; if the Pok\u00e9mon loses this ability, it will begin taking as much damage as it would be if it had been taking increasing damage each turn.",
     "short_effect": "Protects against damage not directly caused by a move."
   },
   {
@@ -1070,7 +1070,7 @@
   {
     "id": 104,
     "name": "mold-breaker",
-    "effect": "This Pok\u00e9mon's moves completely ignore abilities that could hinder or prevent their effect on the target.\n\nFor example, this Pok\u00e9mon's moves ignore abilities that would fully negate them, such as water absorb; abilities that would prevent any of their effects, such as clear body, shell armor, or sticky hold; and abilities that grant any general protective benefit, such as simple, snow cloak, or thick fat.  If an ability could either hinder or help this Pok\u00e9mon's moves, e.g. dry skin or unaware, ",
+    "effect": "This Pok\u00e9mon's moves completely ignore abilities that could hinder or prevent their effect on the target.\n\nFor example, this Pok\u00e9mon's moves ignore abilities that would fully negate them, such as water absorb; abilities that would prevent any of their effects, such as clear body, shell armor, or sticky hold; and abilities that grant any general protective benefit, such as simple, snow cloak, or thick fat.  If an ability could either hinder or help this Pok\u00e9mon's moves, e.g. dry skin or unaware, the ability is ignored either way.\n\nAbilities that do not fit this description, even if they could hinder moves in some other way, are not affected.  For example, cursed body only affects potential future uses of the move, while liquid ooze and shadow tag can only hinder a move's effect on the user.  This ablity cannot ignore type or form changes granted by abilities, for example color change or forecast; nor effects that were caused by abilities but are no longer tied to an ability, such as the rain from drizzle.  This ability cannot ignore multitype at all.\n\nAn ability ignored by this ability is only nullified while the move is being used.  For example, this Pok\u00e9mon's moves can paralyze a Pok\u00e9mon with limber, but Limber will activate and heal the paralysis immediately thereafter, and this Pok\u00e9mon's spikes are not affected by this ability after they have been placed.\n\nWhen this Pok\u00e9mon enters battle, all participating trainers are notified that it has this ability.\n\nThis ability functions identically to teravolt and turboblaze.",
     "short_effect": "Bypasses targets' abilities if they could hinder or prevent a move."
   },
   {
@@ -1112,7 +1112,7 @@
   {
     "id": 121,
     "name": "multitype",
-    "effect": "If this Pok\u00e9mon is holding an elemental Plate, its type and form change to match the Plate.\n\nThis Pok\u00e9mon's held item, whether or not it is a Plate, cannot be taken by covet or thief, nor removed by knock off, nor traded by switcheroo or trick.  Covet, Thief, and Knock Off still inflict damage against this Pok\u00e9mon.  Unlike with sticky hold, this Pok\u00e9mon cannot use fling, Switcheroo, or Trick to lose its item itself, nor gain an item through Switcheroo or Trick if it does not have one.\n\nThis abil",
+    "effect": "If this Pok\u00e9mon is holding an elemental Plate, its type and form change to match the Plate.\n\nThis Pok\u00e9mon's held item, whether or not it is a Plate, cannot be taken by covet or thief, nor removed by knock off, nor traded by switcheroo or trick.  Covet, Thief, and Knock Off still inflict damage against this Pok\u00e9mon.  Unlike with sticky hold, this Pok\u00e9mon cannot use fling, Switcheroo, or Trick to lose its item itself, nor gain an item through Switcheroo or Trick if it does not have one.\n\nThis ability has no effect for any Pok\u00e9mon other than arceus.  This ability cannot be traded with skill swap, nor copied with role play or trace, nor disabled with gastro acid, nor changed with worry seed.  This Pok\u00e9mon cannot use Skill Swap or Role Play to lose its ability itself.  mold breaker cannot ignore this ability.\n\nIf a Pok\u00e9mon Transforms into an Arceus with this ability, it will Transform into Arceus's default, normal-type form.  If the Transforming Pok\u00e9mon is holding a Plate, this ability will then activate and change the Pok\u00e9mon into the corresponding form.",
     "short_effect": "Changes arceus's type and form to match its held Plate."
   },
   {
@@ -1250,7 +1250,7 @@
   {
     "id": 53,
     "name": "pickup",
-    "effect": "At the end of each turn, if another Pok\u00e9mon consumed or Flung a held item that turn, this Pok\u00e9mon picks up the item if it is not already holding one.  After each battle, this Pok\u00e9mon has a 10% chance of picking up an item if it is not already holding one.\n\nThe air balloon and eject button cannot be picked up.\n\nThe items that may be found vary by game, and, since Pok\u00e9mon Emerald, by the Pok\u00e9mon's level.  This ability is checked after the battle ends, at which point any temporary ability changes h",
+    "effect": "At the end of each turn, if another Pok\u00e9mon consumed or Flung a held item that turn, this Pok\u00e9mon picks up the item if it is not already holding one.  After each battle, this Pok\u00e9mon has a 10% chance of picking up an item if it is not already holding one.\n\nThe air balloon and eject button cannot be picked up.\n\nThe items that may be found vary by game, and, since Pok\u00e9mon Emerald, by the Pok\u00e9mon's level.  This ability is checked after the battle ends, at which point any temporary ability changes have worn off.",
     "short_effect": "Picks up other Pok\u00e9mon's used and Flung held items.  May also pick up an item after battle."
   },
   {
@@ -1322,7 +1322,7 @@
   {
     "id": 46,
     "name": "pressure",
-    "effect": "Moves targetting this Pok\u00e9mon use one extra PP.\n\nThis ability stacks if multiple targets have it.  This ability still affects moves that fail or miss.  This ability does not affect ally moves that target either the entire field or just its side, nor this Pok\u00e9mon's self-targetted moves; it does, however, affect single-targetted ally moves aimed at this Pok\u00e9mon, ally moves that target all other Pok\u00e9mon, and opponents' moves that target the entire field.  If this ability raises a move's PP cost abo",
+    "effect": "Moves targetting this Pok\u00e9mon use one extra PP.\n\nThis ability stacks if multiple targets have it.  This ability still affects moves that fail or miss.  This ability does not affect ally moves that target either the entire field or just its side, nor this Pok\u00e9mon's self-targetted moves; it does, however, affect single-targetted ally moves aimed at this Pok\u00e9mon, ally moves that target all other Pok\u00e9mon, and opponents' moves that target the entire field.  If this ability raises a move's PP cost above its remaining PP, it will use all remaining PP.\n\nWhen this Pok\u00e9mon enters battle, all participating trainers are notified that it has this ability.\n\nOverworld: If the lead Pok\u00e9mon has this ability, higher-levelled Pok\u00e9mon have their encounter rate increased.",
     "short_effect": "Increases the PP cost of moves targetting the Pok\u00e9mon by one."
   },
   {
@@ -1334,7 +1334,7 @@
   {
     "id": 189,
     "name": "primordial-sea",
-    "effect": "When this Pok\u00e9mon enters battle or gains this ability, the weather becomes heavy rain.  Heavy rain has all the properties of rain dance and also causes damaging Fire moves to fail.\n\nHeavy rain ends when this Pok\u00e9mon leaves battle or loses this ability, or when this ability is nullified.  The weather cannot otherwise be changed except by the effects of delta stream and desolate land.\n\nair lock and cloud nine will prevent the effects of heavy rain, including allowing Fire moves to work, but will n",
+    "effect": "When this Pok\u00e9mon enters battle or gains this ability, the weather becomes heavy rain.  Heavy rain has all the properties of rain dance and also causes damaging Fire moves to fail.\n\nHeavy rain ends when this Pok\u00e9mon leaves battle or loses this ability, or when this ability is nullified.  The weather cannot otherwise be changed except by the effects of delta stream and desolate land.\n\nair lock and cloud nine will prevent the effects of heavy rain, including allowing Fire moves to work, but will not allow the weather to be changed.",
     "short_effect": "Creates heavy rain, which has all the properties of Rain Dance, cannot be replaced, and causes damaging Fire moves to fail."
   },
   {
@@ -1514,7 +1514,7 @@
   {
     "id": 45,
     "name": "sand-stream",
-    "effect": "The weather changes to a sandstorm when this Pok\u00e9mon enters battle and does not end unless cancelled by another weather condition.\n\nIf multiple Pok\u00e9mon with this ability, drizzle, drought, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pok\u00e9mon will stay.\n\nOverworld: If the lead Pok\u00e9mon has this ability, the wild encoun",
+    "effect": "The weather changes to a sandstorm when this Pok\u00e9mon enters battle and does not end unless cancelled by another weather condition.\n\nIf multiple Pok\u00e9mon with this ability, drizzle, drought, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pok\u00e9mon will stay.\n\nOverworld: If the lead Pok\u00e9mon has this ability, the wild encounter rate is halved in a sandstorm.",
     "short_effect": "Summons a sandstorm that lasts indefinitely upon entering battle."
   },
   {
@@ -1748,7 +1748,7 @@
   {
     "id": 100,
     "name": "stall",
-    "effect": "This Pok\u00e9mon moves last within its priority bracket.\n\nMultiple Pok\u00e9mon with this ability move in order of Speed amongst themselves.\n\nThe full incense and lagging tail take precedence over this ability; that is, Pok\u00e9mon with these items move after Pok\u00e9mon with this ability.  Pok\u00e9mon with both this ability and one of these items are delayed as much as if they had only the item.\n\nThis ability works as usual during trick room: Pok\u00e9mon with this ability will move in reverse order of Speed after Pok\u00e9m",
+    "effect": "This Pok\u00e9mon moves last within its priority bracket.\n\nMultiple Pok\u00e9mon with this ability move in order of Speed amongst themselves.\n\nThe full incense and lagging tail take precedence over this ability; that is, Pok\u00e9mon with these items move after Pok\u00e9mon with this ability.  Pok\u00e9mon with both this ability and one of these items are delayed as much as if they had only the item.\n\nThis ability works as usual during trick room: Pok\u00e9mon with this ability will move in reverse order of Speed after Pok\u00e9mon without it.",
     "short_effect": "Makes the Pok\u00e9mon move last within its move's priority bracket."
   },
   {
@@ -1820,7 +1820,7 @@
   {
     "id": 114,
     "name": "storm-drain",
-    "effect": "All other Pok\u00e9mon's single-target water-type moves are redirected to this Pok\u00e9mon, if it is an eligible target.  Other Pok\u00e9mon's Water moves raise this Pok\u00e9mon's Special Attack one stage, negating any other effect on it, and cannot miss it.\n\nIf the move's intended target also has this ability, the move is not redirected.  When multiple Pok\u00e9mon with this ability are possible targets for redirection, the move is redirected to the one with the highest Speed stat, or, in the case of a tie, to a rand",
+    "effect": "All other Pok\u00e9mon's single-target water-type moves are redirected to this Pok\u00e9mon, if it is an eligible target.  Other Pok\u00e9mon's Water moves raise this Pok\u00e9mon's Special Attack one stage, negating any other effect on it, and cannot miss it.\n\nIf the move's intended target also has this ability, the move is not redirected.  When multiple Pok\u00e9mon with this ability are possible targets for redirection, the move is redirected to the one with the highest Speed stat, or, in the case of a tie, to a random tied Pok\u00e9mon.  follow me takes precedence over this ability.",
     "short_effect": "Redirects single-target water moves to this Pok\u00e9mon where possible.  Absorbs Water moves, raising Special Attack one stage."
   },
   {
@@ -1898,7 +1898,7 @@
   {
     "id": 28,
     "name": "synchronize",
-    "effect": "Whenever this Pok\u00e9mon is burned, paralyzed, or poisoned, the Pok\u00e9mon who gave this Pok\u00e9mon that ailment is also given the ailment.\n\nThis ability passes back bad poison when this Pok\u00e9mon is badly poisoned.  This ability cannot pass on a status ailment that the Pok\u00e9mon did not directly receive from another Pok\u00e9mon, such as the poison from toxic spikes or the burn from a flame orb.\n\nOverworld: If the lead Pok\u00e9mon has this ability, wild Pok\u00e9mon have a 50% chance of having the lead Pok\u00e9mon's nature, ",
+    "effect": "Whenever this Pok\u00e9mon is burned, paralyzed, or poisoned, the Pok\u00e9mon who gave this Pok\u00e9mon that ailment is also given the ailment.\n\nThis ability passes back bad poison when this Pok\u00e9mon is badly poisoned.  This ability cannot pass on a status ailment that the Pok\u00e9mon did not directly receive from another Pok\u00e9mon, such as the poison from toxic spikes or the burn from a flame orb.\n\nOverworld: If the lead Pok\u00e9mon has this ability, wild Pok\u00e9mon have a 50% chance of having the lead Pok\u00e9mon's nature, and a 50% chance of being given a random nature as usual, including the lead Pok\u00e9mon's nature.  This does not work on Pok\u00e9mon received outside of battle or roaming legendaries.",
     "short_effect": "Copies burns, paralysis, and poison received onto the Pok\u00e9mon that inflicted them."
   },
   {
@@ -1958,7 +1958,7 @@
   {
     "id": 164,
     "name": "teravolt",
-    "effect": "This Pok\u00e9mon's moves completely ignore abilities that could hinder or prevent their effect on the target.\n\nFor example, this Pok\u00e9mon's moves ignore abilities that would fully negate them, such as water absorb; abilities that would prevent any of their effects, such as clear body, shell armor, or sticky hold; and abilities that grant any general protective benefit, such as simple, snow cloak, or thick fat.  If an ability could either hinder or help this Pok\u00e9mon's moves, e.g. dry skin or unaware, ",
+    "effect": "This Pok\u00e9mon's moves completely ignore abilities that could hinder or prevent their effect on the target.\n\nFor example, this Pok\u00e9mon's moves ignore abilities that would fully negate them, such as water absorb; abilities that would prevent any of their effects, such as clear body, shell armor, or sticky hold; and abilities that grant any general protective benefit, such as simple, snow cloak, or thick fat.  If an ability could either hinder or help this Pok\u00e9mon's moves, e.g. dry skin or unaware, the ability is ignored either way.\n\nAbilities that do not fit this description, even if they could hinder moves in some other way, are not affected.  For example, cursed body only affects potential future uses of the move, while liquid ooze and shadow tag can only hinder a move's effect on the user.  This ablity cannot ignore type or form changes granted by abilities, for example color change or forecast; nor effects that were caused by abilities but are no longer tied to an ability, such as the rain from drizzle.  This ability cannot ignore multitype at all.\n\nAn ability ignored by this ability is only nullified while the move is being used.  For example, this Pok\u00e9mon's moves can paralyze a Pok\u00e9mon with limber, but Limber will activate and heal the paralysis immediately thereafter, and this Pok\u00e9mon's spikes are not affected by this ability after they have been placed.\n\nWhen this Pok\u00e9mon enters battle, all participating trainers are notified that it has this ability.\n\nThis ability functions identically to mold breaker and turboblaze.",
     "short_effect": "Bypasses targets' abilities if they could hinder or prevent moves."
   },
   {
@@ -2036,13 +2036,13 @@
   {
     "id": 54,
     "name": "truant",
-    "effect": "Every second turn on which this Pok\u00e9mon should attempt to use a move, it will instead do nothing (\"loaf around\").\n\nLoafing around interrupts moves that take multiple turns the same way paralysis, flinching, etc do.  Most such moves, for example bide or rollout, are simply cut off upon loafing around.  Attacks with a recharge turn, such as hyper beam, do not have to recharge; attacks with a preparation turn, such as fly, do not end up being used.  Moves that are forced over multiple turns and kee",
+    "effect": "Every second turn on which this Pok\u00e9mon should attempt to use a move, it will instead do nothing (\"loaf around\").\n\nLoafing around interrupts moves that take multiple turns the same way paralysis, flinching, etc do.  Most such moves, for example bide or rollout, are simply cut off upon loafing around.  Attacks with a recharge turn, such as hyper beam, do not have to recharge; attacks with a preparation turn, such as fly, do not end up being used.  Moves that are forced over multiple turns and keep going through failure, such as outrage, uproar, or any move forced by encore, keep going as usual.\n\nIf this Pok\u00e9mon is confused, its confusion is not checked when loafing around; the Pok\u00e9mon cannot hurt itself, and its confusion does not end or come closer to ending.\n\nIf this Pok\u00e9mon attempts to move but fails, e.g. because of paralysis or gravity, it still counts as having moved and will loaf around the next turn.  If it does not attempt to move, e.g. because it is asleep or frozen, whatever it would have done will be postponed until its next attempt; that is, it will either loaf around or move as usual, depending on what it last did.\n\nThis ability cannot be changed with worry seed, but it can be disabled with gastro acid, changed with role play, or traded away with skill swap.",
     "short_effect": "Skips every second turn."
   },
   {
     "id": 163,
     "name": "turboblaze",
-    "effect": "This Pok\u00e9mon's moves completely ignore abilities that could hinder or prevent their effect on the target.\n\nFor example, this Pok\u00e9mon's moves ignore abilities that would fully negate them, such as water absorb; abilities that would prevent any of their effects, such as clear body, shell armor, or sticky hold; and abilities that grant any general protective benefit, such as simple, snow cloak, or thick fat.  If an ability could either hinder or help this Pok\u00e9mon's moves, e.g. dry skin or unaware, ",
+    "effect": "This Pok\u00e9mon's moves completely ignore abilities that could hinder or prevent their effect on the target.\n\nFor example, this Pok\u00e9mon's moves ignore abilities that would fully negate them, such as water absorb; abilities that would prevent any of their effects, such as clear body, shell armor, or sticky hold; and abilities that grant any general protective benefit, such as simple, snow cloak, or thick fat.  If an ability could either hinder or help this Pok\u00e9mon's moves, e.g. dry skin or unaware, the ability is ignored either way.\n\nAbilities that do not fit this description, even if they could hinder moves in some other way, are not affected.  For example, cursed body only affects potential future uses of the move, while liquid ooze and shadow tag can only hinder a move's effect on the user.  This ablity cannot ignore type or form changes granted by abilities, for example color change or forecast; nor effects that were caused by abilities but are no longer tied to an ability, such as the rain from drizzle.  This ability cannot ignore multitype at all.\n\nAn ability ignored by this ability is only nullified while the move is being used.  For example, this Pok\u00e9mon's moves can paralyze a Pok\u00e9mon with limber, but Limber will activate and heal the paralysis immediately thereafter, and this Pok\u00e9mon's spikes are not affected by this ability after they have been placed.\n\nWhen this Pok\u00e9mon enters battle, all participating trainers are notified that it has this ability.\n\nThis ability functions identically to mold breaker and teravolt.",
     "short_effect": "Bypasses targets' abilities if they could hinder or prevent moves."
   },
   {
@@ -2156,7 +2156,7 @@
   {
     "id": 73,
     "name": "white-smoke",
-    "effect": "This Pok\u00e9mon cannot have its stats lowered by other Pok\u00e9mon.\n\nThis ability does not prevent any stat losses other than stat modifiers, such as the Speed cut from paralysis; nor self-inflicted stat drops, such as the Special Attack drop from overheat; nor opponent-triggered stat boosts, such as the Attack boost from swagger.  This Pok\u00e9mon can still be passed negative stat modifiers through guard swap, heart swap, or power swap.\n\nThis ability functions identically to clear body in battle.\n\nOverwor",
+    "effect": "This Pok\u00e9mon cannot have its stats lowered by other Pok\u00e9mon.\n\nThis ability does not prevent any stat losses other than stat modifiers, such as the Speed cut from paralysis; nor self-inflicted stat drops, such as the Special Attack drop from overheat; nor opponent-triggered stat boosts, such as the Attack boost from swagger.  This Pok\u00e9mon can still be passed negative stat modifiers through guard swap, heart swap, or power swap.\n\nThis ability functions identically to clear body in battle.\n\nOverworld: If the lead Pok\u00e9mon has this ability, the wild encounter rate is halved.",
     "short_effect": "Prevents stats from being lowered by other Pok\u00e9mon."
   },
   {
@@ -2180,7 +2180,7 @@
   {
     "id": 25,
     "name": "wonder-guard",
-    "effect": "This Pok\u00e9mon is immune to damaging moves that are not super effective against it.\n\nMoves that inflict fixed damage, such as night shade or seismic toss, are considered super effective if their types are.  Damage not directly dealt by moves, such as damage from weather, a status ailment, or spikes, is not prevented.\n\nThis ability cannot be copied with role play or traded away with skill swap, but it can be copied with trace, disabled with gastro acid, or changed with worry seed.  This Pok\u00e9mon can",
+    "effect": "This Pok\u00e9mon is immune to damaging moves that are not super effective against it.\n\nMoves that inflict fixed damage, such as night shade or seismic toss, are considered super effective if their types are.  Damage not directly dealt by moves, such as damage from weather, a status ailment, or spikes, is not prevented.\n\nThis ability cannot be copied with role play or traded away with skill swap, but it can be copied with trace, disabled with gastro acid, or changed with worry seed.  This Pok\u00e9mon can still use Role Play itself to lose this ability, but not Skill Swap.\n\nIf this Pok\u00e9mon has a substitute, this ability will block moves as usual and any moves not blocked will react to the Substitute as usual.",
     "short_effect": "Protects against damaging moves that are not super effective."
   },
   {

@@ -13,6 +13,7 @@ OUTPUT_DIR = Path("../data")
 moves_cache = {}
 moves_name_to_id = {}
 pokemon_cache = {}
+egg_group_lookup = []
 
 def ensure_dir(directory):
     Path(directory).mkdir(parents=True, exist_ok=True)
@@ -105,7 +106,7 @@ def generate_abilities():
         print(f"Using existing abilities.json ({len(abilities)} abilities)")
         return abilities
     
-    data = fetch_json(f"{POKEAPI_BASE}/ability")
+    data = fetch_json(f"{POKEAPI_BASE}/ability?limit=100000")
     if not data:
         print("Failed to fetch abilities")
         return []
@@ -152,7 +153,7 @@ def generate_moves():
         print(f"Using existing moves.json ({len(moves)} moves)")
         return moves
     
-    data = fetch_json(f"{POKEAPI_BASE}/move")
+    data = fetch_json(f"{POKEAPI_BASE}/move?limit=100000")
     if not data:
         print("Failed to fetch moves")
         return []
@@ -202,7 +203,7 @@ def generate_egg_groups():
         print(f"Using existing egg-groups.json ({len(egg_groups)} egg groups)")
         return egg_groups
     
-    data = fetch_json(f"{POKEAPI_BASE}/egg-group")
+    data = fetch_json(f"{POKEAPI_BASE}/egg-group?limit=100")
     if not data:
         print("Failed to fetch egg groups")
         return []
@@ -246,7 +247,7 @@ def generate_version_groups():
         print(f"Using existing version-groups.json ({len(version_groups)} version groups)")
         return version_groups
     
-    data = fetch_json(f"{POKEAPI_BASE}/version-group")
+    data = fetch_json(f"{POKEAPI_BASE}/version-group?limit=10000")
     if not data:
         print("Failed to fetch version groups")
         return []
@@ -282,7 +283,7 @@ def generate_pokemon_list():
         print(f"Using existing pokemon.json ({len(pokemon_list)} Pokémon)")
         return pokemon_list
     
-    data = fetch_json(f"{POKEAPI_BASE}/pokemon")
+    data = fetch_json(f"{POKEAPI_BASE}/pokemon?limit=100000")
     if not data:
         print("Failed to fetch pokemon list")
         return []
@@ -414,9 +415,17 @@ def generate_pokemon_details(start_from=1, resume_only=False):
             if chain_data:
                 evolution_chain = parse_evolution_chain(chain_data['chain'])
 
+        temp = []
         egg_groups = []
         if species:
-            egg_groups = [g['name'] for g in species.get('egg_groups', [])]
+            temp = [g['name'] for g in species.get('egg_groups', [])]
+        
+        global egg_group_lookup
+        for i in temp:
+            for j in egg_group_lookup:
+                if j['name'] == i:
+                    egg_groups.append(j['names']['en'])
+                    break
 
         moves_by_method = defaultdict(list)
         
@@ -586,8 +595,6 @@ def main():
                        help='Resume generating missing Pokémon details only')
     parser.add_argument('--start-from', type=int, default=1, 
                        help='Start generating details from specific Pokémon ID')
-    parser.add_argument('--skip-lookup', action='store_true', 
-                       help='Skip generating lookup data')
     
     args = parser.parse_args()
     
@@ -597,15 +604,13 @@ def main():
     ensure_dir(OUTPUT_DIR)
     ensure_dir(OUTPUT_DIR / 'pokemon-details')
     
-    if not args.skip_lookup and not args.resume:
-        generate_types()
-        generate_abilities()
-        generate_moves()
-        generate_version_groups()
-        generate_egg_groups()
-        generate_pokemon_list()
-    else:
-        print("\nUsing existing lookup data files")
+    generate_types()
+    generate_abilities()
+    generate_moves()
+    generate_version_groups()
+    global egg_group_lookup
+    egg_group_lookup = generate_egg_groups()
+    generate_pokemon_list()
     
     if args.resume:
         generate_pokemon_details(resume_only=True)

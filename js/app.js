@@ -19,6 +19,8 @@ const App = {
                 isOnlyEvolution: false,
                 hasMultipleBranching: false,
                 evolvedFromBranching: false,
+                evolvedByItem: false,
+                evolvedByAffection: false,
                 hp: { value: null, mode: 'higher' },
                 attack: { value: null, mode: 'higher' },
                 defense: { value: null, mode: 'higher' },
@@ -368,6 +370,64 @@ const App = {
                 });
             }
 
+            if (this.filters.evolvedByItem) {
+                const needsDetails = filtered.filter(p => !p.details);
+                if (needsDetails.length > 0) {
+                    await Promise.all(needsDetails.map(async p => {
+                        p.details = await PokedexData.getPokemonDetails(p.id);
+                    }));
+                }
+                
+                filtered = filtered.filter(p => {
+                    if (!p.details || !p.details.evo) return false;
+
+                    const checkEvolutionNode = (node) => {
+                        if (!node) return false;
+
+                        if (node.evolves_to) {
+                            for (const child of node.evolves_to) {
+                                if (child.name === p.name) {
+                                    return (child.item !== null || child.held_item !== null);
+                                }
+                                if (checkEvolutionNode(child)) return true;
+                            }
+                        }
+                        return false;
+                    };
+                    
+                    return checkEvolutionNode(p.details.evo);
+                });
+            }
+
+            if (this.filters.evolvedByAffection) {
+                const needsDetails = filtered.filter(p => !p.details);
+                if (needsDetails.length > 0) {
+                    await Promise.all(needsDetails.map(async p => {
+                        p.details = await PokedexData.getPokemonDetails(p.id);
+                    }));
+                }
+                
+                filtered = filtered.filter(p => {
+                    if (!p.details || !p.details.evo) return false;
+
+                    const checkEvolutionNode = (node) => {
+                        if (!node) return false;
+
+                        if (node.evolves_to) {
+                            for (const child of node.evolves_to) {
+                                if (child.name === p.name) {
+                                    return (child.min_affection !== null || child.min_happiness !== null);
+                                }
+                                if (checkEvolutionNode(child)) return true;
+                            }
+                        }
+                        return false;
+                    };
+                    
+                    return checkEvolutionNode(p.details.evo);
+                });
+            }
+
             filtered = filtered.filter(p => {
                 const stats = p.stats;
                 const bst = stats.hp + stats.attack + stats.defense + 
@@ -638,6 +698,8 @@ const App = {
                 isOnlyEvolution: false,
                 hasMultipleBranching: false,
                 evolvedFromBranching: false,
+                evolvedByItem: false,
+                evolvedByAffection: false,
                 hp: { value: null, mode: 'higher' },
                 attack: { value: null, mode: 'higher' },
                 defense: { value: null, mode: 'higher' },
