@@ -66,21 +66,21 @@ const App = {
             ],
             
             typeMatchModes: [
+                { value: 'exact', label: 'Exactly selected' },
                 { value: 'all', label: 'Has all selected' },
-                { value: 'any', label: 'Has any selected' },
-                { value: 'exact', label: 'Only has selected' }
+                { value: 'any', label: 'Has any selected' }
             ],
 
             generations: [
-                { value: "generation-i", label: 'I' },
-                { value: "generation-ii", label: 'II' },
-                { value: "generation-iii", label: 'III' },
-                { value: "generation-iv", label: 'IV' },
-                { value: "generation-v", label: 'V' },
-                { value: "generation-vi", label: 'VI' },
-                { value: "generation-vii", label: 'VII' },
-                { value: "generation-viii", label: 'VIII' },
-                { value: "generation-ix", label: 'IX' }
+                { value: "generation-i", label: '1' },
+                { value: "generation-ii", label: '2' },
+                { value: "generation-iii", label: '3' },
+                { value: "generation-iv", label: '4' },
+                { value: "generation-v", label: '5' },
+                { value: "generation-vi", label: '6' },
+                { value: "generation-vii", label: '7' },
+                { value: "generation-viii", label: '8' },
+                { value: "generation-ix", label: '9' }
             ],
 
             moveMethods: [
