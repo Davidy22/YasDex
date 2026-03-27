@@ -80,7 +80,6 @@
 .evolution-chain-container {
     position: relative;
     width: 100%;
-    min-width: 600px;
 }
 
 .evolution-tree {

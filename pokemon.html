@@ -41,43 +41,45 @@
 
             <!-- Top banner -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="p-6 text-white" :style="headerGradient">
-                    <div class="flex items-center">
-                        <div class="relative">
-                            <img :src="currentSprite" :alt="pokemon.name" class="w-32 h-32 bg-white rounded-full p-2">
-                            <button @click="toggleShiny" class="absolute bottom-0 right-0 bg-yellow-400 rounded-full p-2 text-black hover:bg-yellow-300">
-                                <i class="fas fa-star"></i>
+                <div class="p-4 sm:p-6 text-white" :style="headerGradient">
+                    <div class="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
+                        <div class="relative flex-shrink-0 self-center sm:self-start">
+                            <img :src="currentSprite" :alt="pokemon.name" 
+                                 class="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full p-2">
+                            <button @click="toggleShiny" 
+                                    class="absolute bottom-0 right-0 bg-yellow-400 rounded-full p-1.5 sm:p-2 text-black hover:bg-yellow-300">
+                                <i class="fas fa-star text-xs sm:text-sm"></i>
                             </button>
                         </div>
 
-                        <div class="ml-6 flex-1">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h1 class="text-4xl font-bold capitalize">{{ formatName(pokemon.name) }}</h1>
-                                    <p class="text-xl opacity-90">{{ currentGenus }}</p>
-                                    <p class="text-sm opacity-75">#{{ String(pokemon.dex).padStart(4, '0') }}</p>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <span v-for="type in pokemon.types" :key="type" 
-                                          :class="'px-3 py-1 rounded-full text-sm font-semibold text-white ' + getTypeColor(type)">
-                                        {{ formatName(type) }}
-                                    </span>
-                                </div>
+                        <div class="flex-1 relative">
+                            <div class="absolute top-0 right-0 flex flex-col gap-2">
+                                <span v-for="type in pokemon.types" :key="type" 
+                                      :class="'px-3 py-1 rounded-full text-xs sm:text-sm font-semibold text-white text-center ' + getTypeColor(type)">
+                                    {{ formatName(type) }}
+                                </span>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div class="pr-28 sm:pr-32">
+                                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold capitalize">{{ formatName(pokemon.name) }}</h1>
+                                <p class="text-base sm:text-lg md:text-xl opacity-90">{{ currentGenus }}</p>
+                                <p class="text-xs sm:text-sm opacity-75">#{{ String(pokemon.dex).padStart(4, '0') }}</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
                                 <div>
-                                    <p class="text-sm opacity-75">Height</p>
-                                    <p class="font-semibold">{{ (pokemon.ht / 10).toFixed(1) }} m</p>
+                                    <p class="text-xs sm:text-sm opacity-75">Height</p>
+                                    <p class="text-sm sm:text-base font-semibold">{{ (pokemon.ht / 10).toFixed(1) }} m</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm opacity-75">Weight</p>
-                                    <p class="font-semibold">{{ (pokemon.wt / 10).toFixed(1) }} kg</p>
+                                    <p class="text-xs sm:text-sm opacity-75">Weight</p>
+                                    <p class="text-sm sm:text-base font-semibold">{{ (pokemon.wt / 10).toFixed(1) }} kg</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <!-- Tabs -->
                 <div class="border-b border-gray-200">
