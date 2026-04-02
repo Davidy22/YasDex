@@ -5,7 +5,6 @@ import time
 import pickle
 from pathlib import Path
 from collections import defaultdict
-import argparse
 
 POKEAPI_BASE = "https://pokeapi.co/api/v2"
 OUTPUT_DIR = Path("../data")
@@ -39,20 +38,6 @@ def fetch_json(url, retries=5, delay=0.2):
             time.sleep(base_delay * (i + 1))
     
     return None
-
-def get_existing_pokemon_ids():
-    details_dir = OUTPUT_DIR / 'pokemon-details'
-    if not details_dir.exists():
-        return set()
-    
-    existing = set()
-    for file in details_dir.glob('*.json'):
-        try:
-            pokemon_id = int(file.stem)
-            existing.add(pokemon_id)
-        except:
-            pass
-    return existing
 
 def generate_types():
     print("\n=== Generating Types ===")
@@ -274,20 +259,14 @@ def generate_version_groups():
     return version_groups
 
 def generate_pokemon_list():
-    print("\n=== Generating Pokémon List ===")
+    print("\n=== Generating Pokémon ===")
     
-    pokemon_file = OUTPUT_DIR / 'pokemon.json'
-    if pokemon_file.exists():
-        with open(pokemon_file, 'r') as f:
-            pokemon_list = json.load(f)
-        print(f"Using existing pokemon.json ({len(pokemon_list)} Pokémon)")
-        return pokemon_list
+    pokedex_file = OUTPUT_DIR / 'pokemon.json'
+    if pokedex_file.exists():
+        with open(pokedex_file, 'r') as f:
+            existing = json.load(f)
+        print(f"Found existing pokemon.json with {len(existing)} Pokémon")
     
-    data = fetch_json(f"{POKEAPI_BASE}/pokemon?limit=100000")
-    if not data:
-        print("Failed to fetch pokemon list")
-        return []
-
     with open(OUTPUT_DIR / 'types.json', 'r') as f:
         types_list = json.load(f)
     with open(OUTPUT_DIR / 'abilities.json', 'r') as f:
@@ -295,11 +274,18 @@ def generate_pokemon_list():
     
     type_names = {t['name'] for t in types_list}
     ability_names = {a['name'] for a in abilities_list}
+
+    data = fetch_json(f"{POKEAPI_BASE}/pokemon?limit=100000")
+    if not data:
+        print("Failed to fetch pokemon list")
+        return None
     
-    pokemon_list = []
+    complete_pokedex = {}
+    total = len(data['results'])
+    
     for i, pokemon_info in enumerate(data['results']):
         if i % 50 == 0:
-            print(f"  Processing Pokémon {i+1}/{len(data['results'])}")
+            print(f"  Processing Pokémon {i+1}/{total}")
         
         detail = fetch_json(pokemon_info['url'])
         if not detail:
@@ -316,98 +302,35 @@ def generate_pokemon_list():
 
         if not pokedex_number:
             pokedex_number = detail['id']
-        
+
         types = []
         for t in detail['types']:
             type_name = t['type']['name']
             if type_name in type_names:
                 types.append(type_name)
-        
+
         abilities = []
         for a in detail['abilities']:
             ability_name = a['ability']['name']
             if ability_name in ability_names:
                 abilities.append(ability_name)
-        
+
         stats = {}
         for s in detail['stats']:
             stat_name = s['stat']['name'].replace('-', '_')
             stats[stat_name] = s['base_stat']
+
+        temp_egg_groups = []
+        egg_groups = []
+        if species:
+            temp_egg_groups = [g['name'] for g in species.get('egg_groups', [])]
         
-        pokemon = {
-            'id': detail['id'],
-            'name': detail['name'],
-            'dex': pokedex_number,
-            'types': types,
-            'abilities': abilities,
-            'sprite': f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{detail['id']}.png",
-            'sprite_shiny': f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/{detail['id']}.png",
-            'stats': stats,
-            'height': detail['height'],
-            'weight': detail['weight'],
-            'base_experience': detail['base_experience'],
-            'is_legendary': species.get('is_legendary', False) if species else False,
-            'is_mythical': species.get('is_mythical', False) if species else False,
-            'generation': species['generation']['name'] if species and species.get('generation') else None,
-            'form': detail['id'] != pokedex_number
-        }
-        pokemon_list.append(pokemon)
-
-    pokemon_list.sort(key=lambda x: (x['dex'], x['id']))
-    
-    with open(pokemon_file, 'w') as f:
-        json.dump(pokemon_list, f, indent=2)
-    print(f"Generated {len(pokemon_list)} Pokémon")
-    return pokemon_list
-
-def generate_pokemon_details(start_from=1, resume_only=False):
-    print("\n=== Generating Pokémon Details ===")
-    ensure_dir(OUTPUT_DIR / 'pokemon-details')
-    
-    load_moves_cache()
-    
-    pokemon_file = OUTPUT_DIR / 'pokemon.json'
-    if not pokemon_file.exists():
-        print("pokemon.json not found!")
-        return
-    
-    with open(pokemon_file, 'r') as f:
-        pokemon_list = json.load(f)
-    
-    existing_ids = get_existing_pokemon_ids()
-    if existing_ids:
-        print(f"Found {len(existing_ids)} existing Pokémon detail files")
-    
-    if resume_only:
-        to_process = [p for p in pokemon_list if p['id'] not in existing_ids]
-        if to_process:
-            print(f"Resuming: {len(to_process)} Pokémon remaining")
-            start_from = to_process[0]['id']
-        else:
-            print("All Pokémon details already generated!")
-            return
-    else:
-        to_process = [p for p in pokemon_list if p['id'] >= start_from]
-        skipped = len(pokemon_list) - len(to_process)
-        if skipped > 0:
-            print(f"Skipping first {skipped} Pokémon (starting from #{start_from})")
-    
-    if not to_process:
-        return
-    
-    successful = 0
-    failed = []
-    total_to_process = len(to_process)
-    
-    for i, pokemon in enumerate(to_process):
-        print(f"  Processing #{pokemon['id']:4d} {pokemon['name']:15s} ({i+1}/{total_to_process})")
-        
-        detail = fetch_json(f"{POKEAPI_BASE}/pokemon/{pokemon['id']}")
-        if not detail:
-            failed.append(pokemon['id'])
-            continue
-
-        species = fetch_json(f"{POKEAPI_BASE}/pokemon-species/{pokemon['dex']}")
+        global egg_group_lookup
+        for g in temp_egg_groups:
+            for eg in egg_group_lookup:
+                if eg['name'] == g:
+                    egg_groups.append(eg['names']['en'])
+                    break
 
         evolution_chain = []
         if species and species.get('evolution_chain'):
@@ -415,20 +338,7 @@ def generate_pokemon_details(start_from=1, resume_only=False):
             if chain_data:
                 evolution_chain = parse_evolution_chain(chain_data['chain'])
 
-        temp = []
-        egg_groups = []
-        if species:
-            temp = [g['name'] for g in species.get('egg_groups', [])]
-        
-        global egg_group_lookup
-        for i in temp:
-            for j in egg_group_lookup:
-                if j['name'] == i:
-                    egg_groups.append(j['names']['en'])
-                    break
-
         moves_by_method = defaultdict(list)
-        
         for move_data in detail['moves']:
             move_name = move_data['move']['name']
             move_id = get_move_id(move_name)
@@ -455,13 +365,6 @@ def generate_pokemon_details(start_from=1, resume_only=False):
                 ev_yield[stat_name] = s['effort']
 
         alternate_forms = []
-        for p in pokemon_list:
-            if p['dex'] == pokemon['dex'] and p['id'] != pokemon['id']:
-                alternate_forms.append({
-                    'id': p['id'],
-                    'name': p['name'],
-                    'sprite': p['sprite']
-                })
 
         genus = ""
         if species and species.get('genera'):
@@ -485,55 +388,115 @@ def generate_pokemon_details(start_from=1, resume_only=False):
                         'text': entry['flavor_text'].replace('\n', ' ').replace('\f', ' ')
                     })
 
-        full_detail = {
-            'id': pokemon['id'],
-            'name': pokemon['name'],
-            'dex': pokemon['dex'],
+        complete_pokedex[detail['id']] = {
+            'id': detail['id'],
+            'name': detail['name'],
+            'dex': pokedex_number,
             'genus': genus,
             'names': names,
-            'ht': pokemon['height'],
-            'wt': pokemon['weight'],
-            'exp': pokemon['base_experience'],
-            'types': pokemon['types'],
+            'ht': detail['height'],
+            'wt': detail['weight'],
+            'exp': detail['base_experience'],
+            'types': types,
             'abils': [{
                 'n': a['ability']['name'],
                 'h': a['is_hidden'],
                 's': a['slot'],
                 'effect': get_ability_short_effect(a['ability']['name'])
             } for a in detail['abilities']],
-            'stats': pokemon['stats'],
+            'stats': stats,
             'moves': dict(moves_by_method),
-            'species': species['name'] if species else pokemon['name'],
-            'gen': pokemon['generation'],
-            'leg': pokemon['is_legendary'],
-            'myth': pokemon['is_mythical'],
+            'species': species['name'] if species else detail['name'],
+            'gen': species['generation']['name'] if species and species.get('generation') else None,
+            'leg': species.get('is_legendary', False) if species else False,
+            'myth': species.get('is_mythical', False) if species else False,
             'baby': species.get('is_baby', False) if species else False,
             'eggs': egg_groups,
             'flavor': flavor_texts,
             'evo': evolution_chain,
-            'sprite': pokemon['sprite'],
-            'shiny': pokemon['sprite_shiny'],
+            'sprite': f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{detail['id']}.png",
+            'shiny': f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/{detail['id']}.png",
             'capture': species.get('capture_rate') if species else None,
             'happiness': species.get('base_happiness') if species else None,
             'growth': species['growth_rate']['name'] if species and species.get('growth_rate') else None,
             'gender': species.get('gender_rate') if species else None,
             'hatch': species.get('hatch_counter') if species else None,
             'ev': ev_yield,
-            'forms': alternate_forms
+            'forms': []
         }
 
-        with open(OUTPUT_DIR / f'pokemon-details/{pokemon["id"]}.json', 'w') as f:
-            json.dump(full_detail, f, separators=(',', ':'))
-        
-        successful += 1
-        pokemon_cache[pokemon['name']] = full_detail
+    print("\n  Adding alternate forms...")
+    for pid, pokemon in complete_pokedex.items():
+        forms = []
+        for other_id, other in complete_pokedex.items():
+            if other['dex'] == pokemon['dex'] and other['id'] != pokemon['id']:
+                forms.append({
+                    'id': other['id'],
+                    'name': other['name'],
+                    'sprite': other['sprite']
+                })
 
-    print(f"\nGenerated {successful} new Pokémon details")
-    if failed:
-        print(f" Failed to generate {len(failed)} Pokémon: {failed}")
+    complete_pokedex = propagate_all_egg_moves_to_dict(complete_pokedex)
+
+    with open(OUTPUT_DIR / 'pokemon.json', 'w') as f:
+        json.dump(complete_pokedex, f, separators=(',', ':'))
+
+    return complete_pokedex
+
+def propagate_all_egg_moves_to_dict(pokedex):
+    print("  Propagating egg moves...")
+    updated_count = 0
+    
+    for pid, pokemon in pokedex.items():
+        if 'evo' in pokemon and pokemon['evo']:
+            # Find basic form
+            def find_basic(node):
+                if not node or not node.get('evolves_to'):
+                    return node
+                return find_basic(node['evolves_to'][0])
+            
+            basic_node = find_basic(pokemon['evo'])
+            if basic_node and basic_node['name'] != pokemon['name']:
+                # Find basic Pokémon in pokedex
+                basic_pokemon = None
+                for other in pokedex.values():
+                    if other['name'] == basic_node['name']:
+                        basic_pokemon = other
+                        break
+                
+                if basic_pokemon and basic_pokemon.get('moves'):
+                    # Get egg moves from basic
+                    basic_egg_moves = {}
+                    for key, moves in basic_pokemon['moves'].items():
+                        if key.startswith('egg_'):
+                            basic_egg_moves[key] = moves.copy()
+                    
+                    if basic_egg_moves:
+                        if 'moves' not in pokemon:
+                            pokemon['moves'] = {}
+                        
+                        for egg_key, egg_moves in basic_egg_moves.items():
+                            if egg_key not in pokemon['moves']:
+                                pokemon['moves'][egg_key] = []
+                            
+                            existing = set()
+                            for move in pokemon['moves'][egg_key]:
+                                if isinstance(move, list):
+                                    existing.add(move[0])
+                                else:
+                                    existing.add(move)
+                            
+                            for move in egg_moves:
+                                move_id = move[0] if isinstance(move, list) else move
+                                if move_id not in existing:
+                                    pokemon['moves'][egg_key].append(move)
+                            
+                            pokemon['moves'][egg_key].sort()
+                        
+                        updated_count += 1
+    return pokedex
 
 def parse_evolution_chain(chain):
-    """Parse evolution chain preserving branching structure"""
     evolutions = []
     
     def traverse(node, level=0):
@@ -590,19 +553,10 @@ def get_ability_short_effect(ability_name):
     return ""
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate Pokédex data')
-    parser.add_argument('--resume', action='store_true', 
-                       help='Resume generating missing Pokémon details only')
-    parser.add_argument('--start-from', type=int, default=1, 
-                       help='Start generating details from specific Pokémon ID')
-    
-    args = parser.parse_args()
-    
     print("Starting Pokédex Data Generation")
     print("================================")
     
     ensure_dir(OUTPUT_DIR)
-    ensure_dir(OUTPUT_DIR / 'pokemon-details')
     
     generate_types()
     generate_abilities()
@@ -611,11 +565,6 @@ def main():
     global egg_group_lookup
     egg_group_lookup = generate_egg_groups()
     generate_pokemon_list()
-    
-    if args.resume:
-        generate_pokemon_details(resume_only=True)
-    else:
-        generate_pokemon_details(start_from=args.start_from)
     
     print("\n=========================")
     print("DATA GENERATION COMPLETE!")

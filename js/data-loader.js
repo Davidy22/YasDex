@@ -1,5 +1,6 @@
 const PokedexData = {
     pokemon: null,
+    pokemonList: [],
     pokemonMap: new Map(),
     types: null,
     typeMap: new Map(),
@@ -52,78 +53,28 @@ const PokedexData = {
             this.moves = await movesRes.json();
             this.versionGroups = await versionsRes.json();
             this.eggGroups = await eggGroupsRes.json();
+            this.pokemonList = Object.values(this.pokemon);
 
-            this.pokemon.forEach(p => this.pokemonMap.set(p.id, p));
+            this.pokemonList.forEach(p => {
+                this.pokemonMap.set(p.id, p);
+                p.details = p;
+            });
             this.moves.forEach(m => this.movesMap.set(m.id, m));
-            this.eggGroupMap = new Map(this.eggGroups.map(eg => [eg.name, eg]));
+            this.eggGroupsMap = new Map(this.eggGroups.map(eg => [eg.name, eg]));
 
-            this.preloadPokemonDetails();
-
-            console.log(`Loaded ${this.pokemon.length} Pokémon`);
+            
             return true;
         } catch (err) {
             this.error = err.message;
+            console.error('❌ Error loading data:', err);
             return false;
         } finally {
             this.loading = false;
         }
     },
 
-    async preloadPokemonDetails() {
-        console.log('Background preloading Pokémon details...');
-
-        const idsToPreload = this.pokemon
-            .filter(p => !this.pokemonMap.get(p.id)?.details)
-            .map(p => p.id)
-            .slice(0, 100);
-
-        // Preload in batches
-        const batchSize = 10;
-        for (let i = 0; i < idsToPreload.length; i += batchSize) {
-            const batch = idsToPreload.slice(i, i + batchSize);
-            
-            // Load batch in parallel
-            await Promise.all(batch.map(async id => {
-                try {
-                    const response = await fetch(`data/pokemon-details/${id}.json`);
-                    const details = await response.json();
-                    if (this.pokemonMap.has(id)) {
-                        this.pokemonMap.get(id).details = details;
-                    }
-                } catch (err) {
-                    console.warn(`Failed to preload #${id}:`, err);
-                }
-            }));
-
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            console.log(`Preloaded batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(idsToPreload.length/batchSize)}`);
-        }
-
-        console.log('Background preloading complete');
-    },
-
-    async getPokemonDetails(id) {
-        if (this.pokemonMap.has(id)) {
-            const cached = this.pokemonMap.get(id);
-            if (cached.details) return cached.details;
-        }
-        
-        try {
-            const response = await fetch(`data/pokemon-details/${id}.json`);
-            if (!response.ok) throw new Error(`Failed to load details for ${id}`);
-            
-            const details = await response.json();
-            
-            if (this.pokemonMap.has(id)) {
-                this.pokemonMap.get(id).details = details;
-            }
-            
-            return details;
-        } catch (err) {
-            console.error(`Error loading details for Pokémon ${id}:`, err);
-            return null;
-        }
+    getPokemonDetails(id) {
+        return this.pokemon[id] || null;
     },
     
     getMoveById(moveId) {
@@ -139,15 +90,15 @@ const PokedexData = {
     },
     
     getPokemonById(id) {
-        return this.pokemonMap.get(parseInt(id)) || null;
+        return this.pokemon[parseInt(id)] || null;
     },
     
     getPokemonByName(name) {
-        return this.pokemon.find(p => p.name.toLowerCase() === name.toLowerCase());
+        return this.pokemonList.find(p => p.name.toLowerCase() === name.toLowerCase());
     },
     
     getPokemonByDexNumber(dex) {
-        return this.pokemon.filter(p => p.dex === dex);
+        return this.pokemonList.filter(p => p.dex === dex);
     },
     
     getStatBarColor(value) {

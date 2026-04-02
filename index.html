@@ -350,8 +350,8 @@
                         <div class="relative">
                             <select v-model="filters.eggGroup1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
                                 <option :value="null">Any</option>
-                                <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.name"
-                                        :disabled="eggGroup.name === filters.eggGroup2">
+                                <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.names.en"
+                                        :disabled="eggGroup.names.en === filters.eggGroup2">
                                     {{ eggGroup.names.en }}
                                 </option>
                             </select>
@@ -360,8 +360,8 @@
                         <div class="relative">
                             <select v-model="filters.eggGroup2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
                                 <option :value="null">Any</option>
-                                <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.name"
-                                        :disabled="eggGroup.name === filters.eggGroup1">
+                                <option v-for="eggGroup in sortedEggGroups" :key="eggGroup.id" :value="eggGroup.names.en"
+                                        :disabled="eggGroup.names.en === filters.eggGroup1">
                                     {{ eggGroup.names.en }}
                                 </option>
                             </select>

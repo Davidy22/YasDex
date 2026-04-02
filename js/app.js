@@ -31,7 +31,6 @@ const App = {
                 eggGroup1: null,
                 eggGroup2: null,
                 eggGroupMatchMode: 'any',
-                generation: null,
                 moves: [
                     { name: null, method: 'any', version: null },
                     { name: null, method: 'any', version: null },
@@ -51,7 +50,6 @@ const App = {
             eggGroups: [],
             moves: [],
             versionGroups: [],
-            generations: [1, 2, 3, 4, 5, 6, 7, 8, 9],
             showResults: false,
 
             loading: true,
@@ -67,7 +65,7 @@ const App = {
             
             typeMatchModes: [
                 { value: 'exact', label: 'Exactly selected' },
-                { value: 'all', label: 'Has all selected' },
+                { value: 'only', label: 'Has only selected' },
                 { value: 'any', label: 'Has any selected' }
             ],
 
@@ -125,6 +123,7 @@ const App = {
             return [...this.moves].sort((a, b) => a.name.localeCompare(b.name));
         }
     },
+    
     async created() {
         console.log('App created, loading data...');
 
@@ -136,7 +135,7 @@ const App = {
                 this.abilities = PokedexData.abilities;
                 this.moves = PokedexData.moves;
                 this.versionGroups = PokedexData.versionGroups;
-                this.allPokemon = PokedexData.pokemon;
+                this.allPokemon = PokedexData.pokemonList;
                 this.pokemon = this.allPokemon;
                 this.eggGroups = PokedexData.eggGroups || [];
 
@@ -156,8 +155,6 @@ const App = {
                     this.showResults = true;
                     
                     console.log('Restored previous search results');
-                } else {
-                    await this.preloadPokemonDetails();
                 }
             } else {
                 this.error = PokedexData.error || 'Failed to load data';
@@ -171,14 +168,8 @@ const App = {
     },
     
     methods: {
-        async preloadPokemonDetails() {
-            const promises = this.allPokemon.slice(0, 50).map(p => 
-                PokedexData.getPokemonDetails(p.id).catch(() => null)
-            );
-            await Promise.all(promises);
-        },
-        
         formatName(name) {
+            if (!name) return '';
             return name.replace(/-/g, ' ').split(' ').map(word => 
                 word.charAt(0).toUpperCase() + word.slice(1)
             ).join(' ');
@@ -189,6 +180,10 @@ const App = {
         },
         
         formatMoveName(name) {
+            return this.formatName(name);
+        },
+        
+        formatEggGroupName(name) {
             return this.formatName(name);
         },
         
@@ -208,22 +203,13 @@ const App = {
         getTypeStyle(type) {
             return PokedexData.getTypeStyle(type);
         },
-        
-        toggleEggGroup(groupName) {
-            const index = this.filters.eggGroups.indexOf(groupName);
-            if (index === -1) {
-                this.filters.eggGroups.push(groupName);
-            } else {
-                this.filters.eggGroups.splice(index, 1);
-            }
+
+        clearEggGroup1() {
+            this.filters.eggGroup1 = null;
         },
 
-        isEggGroupSelected(groupName) {
-            return this.filters.eggGroups.includes(groupName);
-        },
-
-        formatEggGroupName(name) {
-            return this.formatName(name);
+        clearEggGroup2() {
+            this.filters.eggGroup2 = null;
         },
 
         isEggGroupSelected(groupName) {
@@ -235,6 +221,7 @@ const App = {
 
             let filtered = [...this.allPokemon];
 
+            // Name filter
             if (this.filters.name) {
                 const searchTerm = this.filters.name.toLowerCase();
                 filtered = filtered.filter(p => 
@@ -242,93 +229,78 @@ const App = {
                 );
             }
 
+            // Type filter
             if (this.filters.selectedTypes.length > 0) {
                 const mode = this.filters.typeMatchMode;
                 
                 filtered = filtered.filter(p => {
                     if (mode === 'any') {
                         return this.filters.selectedTypes.some(type => p.types.includes(type));
-                    } else if (mode === 'all') {
-                        return this.filters.selectedTypes.every(type => p.types.includes(type));
-                    } else if (mode === 'exact') {
+                    } else if (mode === 'only') {
                         return p.types.every(type => this.filters.selectedTypes.includes(type));
+                    } else if (mode === 'exact') {
+                        return p.types.every(type => this.filters.selectedTypes.includes(type)) &&
+                               this.filters.selectedTypes.every(type => p.types.includes(type));
                     }
                     return true;
                 });
             }
 
+            // Egg group filters
             if (this.filters.eggGroup1 || this.filters.eggGroup2) {
                 const selectedEggGroups = [this.filters.eggGroup1, this.filters.eggGroup2].filter(eg => eg);
                 
                 if (selectedEggGroups.length > 0) {
-                    const needsDetails = filtered.filter(p => !p.details);
-                    if (needsDetails.length > 0) {
-                        await Promise.all(needsDetails.map(async p => {
-                            p.details = await PokedexData.getPokemonDetails(p.id);
-                        }));
-                    }
-                    
                     const mode = this.filters.eggGroupMatchMode || 'any';
                     
                     filtered = filtered.filter(p => {
-                        if (!p.details || !p.details.eggs) return false;
-                        
-                        const pokemonEggs = p.details.eggs;
+                        const pokemonEggs = p.eggs || [];
                         
                         if (mode === 'any') {
                             return selectedEggGroups.some(eg => pokemonEggs.includes(eg));
-                        } else if (mode === 'all') {
-                            return selectedEggGroups.every(eg => pokemonEggs.includes(eg));
+                        } else if (mode === 'only') {
+                            return pokemonEggs.every(eg => selectedEggGroups.includes(eg));
                         } else if (mode === 'exact') {
-                            return pokemonEggs.length === selectedEggGroups.length &&
-                                   selectedEggGroups.every(eg => pokemonEggs.includes(eg));
+                            return selectedEggGroups.every(eg => pokemonEggs.includes(eg));
                         }
                         return true;
                     });
                 }
             }
 
+            // Ability filter
             if (this.filters.ability) {
-                filtered = filtered.filter(p => 
-                    p.abilities.includes(this.filters.ability)
-                );
+                filtered = filtered.filter(p => p.abils.some(a => a.n === this.filters.ability));
             }
 
+            // Generation filter
             if (this.filters.generation) {
-                filtered = filtered.filter(p => p.generation === this.filters.generation);
+                filtered = filtered.filter(p => p.gen === this.filters.generation);
             }
 
+            // Legendary/Mythical filters
             if (this.filters.isLegendary) {
-                filtered = filtered.filter(p => p.is_legendary === true);
+                filtered = filtered.filter(p => p.leg === true);
             }
             if (this.filters.isMythical) {
-                filtered = filtered.filter(p => p.is_mythical === true);
+                filtered = filtered.filter(p => p.myth === true);
             }
 
+            // Evolution stage filters
             if (this.filters.isBaby || this.filters.isBasic || this.filters.isStage1 || 
                 this.filters.isStage2 || this.filters.isFirstEvolution || 
                 this.filters.isMiddleEvolution || this.filters.isFinalEvolution || 
                 this.filters.isOnlyEvolution || this.filters.hasMultipleBranching || 
                 this.filters.evolvedFromBranching) {
 
-                const detailsPromises = filtered.map(async p => {
-                    const details = await PokedexData.getPokemonDetails(p.id);
-                    return { ...p, details };
-                });
-
-                const pokemonWithDetails = await Promise.all(detailsPromises);
-
-                filtered = pokemonWithDetails.filter(p => {
-                    if (!p.details) return true;
-                    
-                    const evo = p.details.evo || [];
+                filtered = filtered.filter(p => {
+                    const evo = p.evo || [];
                     const hasEvolutionLine = this.hasEvolutionLine(evo);
-                    const chainLength = this.getEvolutionChainLength(evo);
                     const position = this.getEvolutionPosition(p.name, evo);
                     const hasEvolutions = this.hasEvolutions(p.name, evo);
                     const hasPreEvolution = this.hasPreEvolution(p.name, evo);
 
-                    if (this.filters.isBaby && !p.details.baby) return false;
+                    if (this.filters.isBaby && !p.baby) return false;
 
                     if (this.filters.isBasic) {
                         if (!hasEvolutionLine || hasPreEvolution) return false;
@@ -370,20 +342,12 @@ const App = {
                 });
             }
 
+            // Item evolution filter
             if (this.filters.evolvedByItem) {
-                const needsDetails = filtered.filter(p => !p.details);
-                if (needsDetails.length > 0) {
-                    await Promise.all(needsDetails.map(async p => {
-                        p.details = await PokedexData.getPokemonDetails(p.id);
-                    }));
-                }
-                
                 filtered = filtered.filter(p => {
-                    if (!p.details || !p.details.evo) return false;
-
+                    const evo = p.evo || [];
                     const checkEvolutionNode = (node) => {
                         if (!node) return false;
-
                         if (node.evolves_to) {
                             for (const child of node.evolves_to) {
                                 if (child.name === p.name) {
@@ -394,25 +358,16 @@ const App = {
                         }
                         return false;
                     };
-                    
-                    return checkEvolutionNode(p.details.evo);
+                    return checkEvolutionNode(evo);
                 });
             }
 
+            // Affection evolution filter
             if (this.filters.evolvedByAffection) {
-                const needsDetails = filtered.filter(p => !p.details);
-                if (needsDetails.length > 0) {
-                    await Promise.all(needsDetails.map(async p => {
-                        p.details = await PokedexData.getPokemonDetails(p.id);
-                    }));
-                }
-                
                 filtered = filtered.filter(p => {
-                    if (!p.details || !p.details.evo) return false;
-
+                    const evo = p.evo || [];
                     const checkEvolutionNode = (node) => {
                         if (!node) return false;
-
                         if (node.evolves_to) {
                             for (const child of node.evolves_to) {
                                 if (child.name === p.name) {
@@ -423,11 +378,11 @@ const App = {
                         }
                         return false;
                     };
-                    
-                    return checkEvolutionNode(p.details.evo);
+                    return checkEvolutionNode(evo);
                 });
             }
 
+            // Stat filters
             filtered = filtered.filter(p => {
                 const stats = p.stats;
                 const bst = stats.hp + stats.attack + stats.defense + 
@@ -442,28 +397,23 @@ const App = {
                        this.compareStat(bst, this.filters.bst);
             });
 
+            // Move filters
             const activeMoves = this.filters.moves.filter(m => m.name);
             if (activeMoves.length > 0) {
-                const detailsPromises = filtered.map(async p => {
-                    const details = await PokedexData.getPokemonDetails(p.id);
-                    return { ...p, details };
-                });
-                
-                const pokemonWithDetails = await Promise.all(detailsPromises);
-                
-                filtered = pokemonWithDetails.filter(p => {
-                    if (!p.details || !p.details.moves) return false;
+                filtered = filtered.filter(p => {
+                    if (!p.moves) return false;
                     
                     return activeMoves.every(moveFilter => {
-                        return this.pokemonHasMove(p.details, moveFilter);
+                        return this.pokemonHasMove(p, moveFilter);
                     });
                 });
             }
 
+            // Apply sorting
             this.filteredPokemon = this.sortPokemon(filtered, this.sortBy, this.sortOrder);
-
             this.showResults = true;
 
+            // Save to session storage
             sessionStorage.setItem('pokedexSearch_filters', JSON.stringify(this.filters));
             sessionStorage.setItem('pokedexSearch_sortBy', this.sortBy);
             sessionStorage.setItem('pokedexSearch_sortOrder', this.sortOrder);
@@ -472,10 +422,10 @@ const App = {
             console.log(`Found ${this.filteredPokemon.length} Pokémon`);
         },
         
-        pokemonHasMove(pokemonDetails, moveFilter) {
-            if (!pokemonDetails.moves) return false;
+        pokemonHasMove(pokemon, moveFilter) {
+            if (!pokemon.moves) return false;
 
-            for (const [key, moves] of Object.entries(pokemonDetails.moves)) {
+            for (const [key, moves] of Object.entries(pokemon.moves)) {
                 const [method, version] = key.split('_');
 
                 if (moveFilter.method !== 'any' && method !== moveFilter.method) {
@@ -571,38 +521,56 @@ const App = {
             return findNode(evoChain);
         },
         
-        hasBranching(evoChain) {
-            const checkBranching = (node) => {
-                if (node.evolves_to && node.evolves_to.length > 1) {
-                    return true;
+        hasEvolutionLine(evoChain) {
+            if (!evoChain || !evoChain.name) return false;
+            return evoChain.evolves_to && evoChain.evolves_to.length > 0;
+        },
+
+        hasPreEvolution(pokemonName, evoChain) {
+            const findParent = (node, parent = null) => {
+                if (node.name === pokemonName) {
+                    return parent !== null;
                 }
                 if (node.evolves_to) {
                     for (const child of node.evolves_to) {
-                        if (checkBranching(child)) return true;
+                        if (findParent(child, node)) return true;
                     }
                 }
                 return false;
             };
-            
-            return checkBranching(evoChain);
+            return findParent(evoChain);
         },
-        
-        evolvedFromBranching(pokemonName, evoChain) {
-            const findParent = (node, parent = null) => {
+
+        hasDirectBranching(evoChain, pokemonName) {
+            const findNode = (node) => {
                 if (node.name === pokemonName) {
-                    return parent;
+                    return node.evolves_to && node.evolves_to.length > 1;
                 }
                 if (node.evolves_to) {
                     for (const child of node.evolves_to) {
-                        const result = findParent(child, node);
+                        const result = findNode(child);
                         if (result) return result;
                     }
                 }
-                return null;
+                return false;
             };
-            
-            const parent = findParent(evoChain);
-            return parent ? this.hasBranching(parent) : false;
+            return findNode(evoChain);
+        },
+
+        evolvedFromDirectBranching(pokemonName, evoChain) {
+            const findParentWithBranching = (node, parent = null) => {
+                if (node.name === pokemonName) {
+                    return parent && parent.evolves_to && parent.evolves_to.length > 1;
+                }
+                if (node.evolves_to) {
+                    for (const child of node.evolves_to) {
+                        const result = findParentWithBranching(child, node);
+                        if (result) return result;
+                    }
+                }
+                return false;
+            };
+            return findParentWithBranching(evoChain);
         },
         
         sortPokemon(pokemonList, sortBy, sortOrder = 'asc') {
@@ -651,12 +619,12 @@ const App = {
                                b.stats.special_attack + b.stats.special_defense + b.stats.speed;
                         break;
                     case 'height':
-                        valA = a.height;
-                        valB = b.height;
+                        valA = a.ht;
+                        valB = b.ht;
                         break;
                     case 'weight':
-                        valA = a.weight;
-                        valB = b.weight;
+                        valA = a.wt;
+                        valB = b.wt;
                         break;
                     case 'type':
                         valA = a.types[0] || '';
@@ -710,7 +678,6 @@ const App = {
                 eggGroup1: null,
                 eggGroup2: null,
                 eggGroupMatchMode: 'any',
-                generation: null,
                 moves: [
                     { name: null, method: 'any', version: null },
                     { name: null, method: 'any', version: null },
@@ -754,58 +721,6 @@ const App = {
             return s.hp + s.attack + s.defense + s.special_attack + s.special_defense + s.speed;
         },
         
-        hasEvolutionLine(evoChain) {
-            if (!evoChain || !evoChain.name) return false;
-            return evoChain.evolves_to && evoChain.evolves_to.length > 0;
-        },
-
-        hasPreEvolution(pokemonName, evoChain) {
-            const findParent = (node, parent = null) => {
-                if (node.name === pokemonName) {
-                    return parent !== null;
-                }
-                if (node.evolves_to) {
-                    for (const child of node.evolves_to) {
-                        if (findParent(child, node)) return true;
-                    }
-                }
-                return false;
-            };
-            return findParent(evoChain);
-        },
-
-        hasDirectBranching(evoChain, pokemonName) {
-            const findNode = (node) => {
-                if (node.name === pokemonName) {
-                    return node.evolves_to && node.evolves_to.length > 1;
-                }
-                if (node.evolves_to) {
-                    for (const child of node.evolves_to) {
-                        const result = findNode(child);
-                        if (result) return result;
-                    }
-                }
-                return false;
-            };
-            return findNode(evoChain);
-        },
-
-        evolvedFromDirectBranching(pokemonName, evoChain) {
-            const findParentWithBranching = (node, parent = null) => {
-                if (node.name === pokemonName) {
-                    return parent && parent.evolves_to && parent.evolves_to.length > 1;
-                }
-                if (node.evolves_to) {
-                    for (const child of node.evolves_to) {
-                        const result = findParentWithBranching(child, node);
-                        if (result) return result;
-                    }
-                }
-                return false;
-            };
-            return findParentWithBranching(evoChain);
-        },
-        
         getDisplayValue(pokemon) {
             if (this.sortBy === 'hp') return `HP: ${pokemon.stats.hp}`;
             if (this.sortBy === 'attack') return `ATK: ${pokemon.stats.attack}`;
@@ -813,8 +728,8 @@ const App = {
             if (this.sortBy === 'specialAttack') return `SpA: ${pokemon.stats.special_attack}`;
             if (this.sortBy === 'specialDefense') return `SpD: ${pokemon.stats.special_defense}`;
             if (this.sortBy === 'speed') return `SPD: ${pokemon.stats.speed}`;
-            if (this.sortBy === 'height') return `HT: ${(pokemon.height / 10).toFixed(1)}m`;
-            if (this.sortBy === 'weight') return `WT: ${(pokemon.weight / 10).toFixed(1)}kg`;
+            if (this.sortBy === 'height') return `HT: ${(pokemon.ht / 10).toFixed(1)}m`;
+            if (this.sortBy === 'weight') return `WT: ${(pokemon.wt / 10).toFixed(1)}kg`;
             return `BST: ${this.getStatTotal(pokemon)}`;
         }
     }
