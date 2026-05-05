@@ -4,7 +4,7 @@ const App = {
             filters: {
                 name: '',
                 selectedTypes: [],
-                typeMatchMode: 'any',
+                typeMatchMode: 'exact',
                 ability: null,
                 generation: null,
                 isLegendary: false,
@@ -651,7 +651,7 @@ const App = {
             this.filters = {
                 name: '',
                 selectedTypes: [],
-                typeMatchMode: 'any',
+                typeMatchMode: 'exact',
                 ability: null,
                 generation: null,
                 isLegendary: false,
